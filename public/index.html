@@ -195,6 +195,35 @@
     .document-links{display:flex;gap:12px;flex-shrink:0;font-size:12px;color:#a4c7e6}#document-search{padding-left:12px;max-width:380px}
     .document-panel [hidden],[hidden]{display:none!important}button:disabled{opacity:.5;cursor:wait}
     @media(max-width:660px){.nav{gap:12px}.nav a{font-size:11px}.nav a:last-child{display:none}.document-row{align-items:flex-start;flex-direction:column}.documents .section-header{align-items:flex-start;flex-wrap:wrap}}
+
+    /* Project publisher: neutral, subtle and consistent with reference palette. */
+    .project-header-actions{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+    .project-add-btn{border:1px solid #505050;background:#292929;color:#ededed;border-radius:6px;padding:9px 12px;font-size:12px;white-space:nowrap}
+    .project-add-btn:hover{border-color:#969696;background:#343434}
+    .project-manager{border:1px solid var(--line);background:var(--bg-soft);padding:24px;border-radius:8px;margin:0 0 20px}
+    .project-manager-head{display:flex;align-items:start;justify-content:space-between;gap:18px;margin-bottom:19px}
+    .project-manager-head h3{font-size:16px;margin:0 0 5px}.project-manager-head p{font-size:12px;color:var(--text-mid);margin:0}
+    .project-manager form{display:grid;grid-template-columns:1fr 1fr;gap:15px}
+    .project-manager .wide{grid-column:1/-1}.project-manager .field-label{margin-bottom:7px}
+    .project-manager input:not([type="checkbox"]),.project-manager textarea{width:100%;border:1px solid #424242;border-radius:6px;background:#222;color:var(--text);padding:10px 11px;font:12px var(--sans);outline:none}
+    .project-manager input:focus,.project-manager textarea:focus{border-color:#999}
+    .project-manager input[type="color"]{padding:3px;min-height:39px;cursor:pointer}
+    .project-manager textarea{resize:vertical;min-height:90px;line-height:1.6}
+    .project-manager .color-row{display:grid;grid-template-columns:60px minmax(0,1fr);gap:10px}
+    .project-manager .level-checks{display:flex;flex-wrap:wrap;gap:12px;font-size:12px;color:var(--text-mid)}
+    .project-manager .level-checks label{display:flex;align-items:center;gap:7px;padding:7px 10px;border:1px solid #3b3b3b;border-radius:5px}
+    .project-manager .level-checks input{accent-color:#b9b9b9}
+    .project-manager .form-note{font-size:11px;color:var(--muted);line-height:1.6}
+    .project-manager .publish-actions{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+    .publish-actions button[type="submit"]{padding:10px 18px;background:#dadada;color:#171717;border:0;border-radius:6px;font-size:12px;font-weight:650}
+    .project-feedback{font-size:12px;color:#b7cfb9;margin:0;line-height:1.6}
+    .project-source-panel{border:1px solid var(--line);border-radius:8px;background:#202020;padding:20px}
+    .project-source-panel p{color:var(--text-mid);font-size:13px}
+    .project-source-links{display:flex;gap:10px;flex-wrap:wrap;margin:15px 0}
+    .project-source-links a{display:inline-block;padding:10px 13px;border:1px solid #777;border-radius:6px;background:#2a2a2a;color:#eee;font-size:12px;text-decoration:none}
+    .project-source-links a:hover{background:#363636}
+    .project-admin-delete{border:1px solid #71504c;background:#302120;border-radius:6px;color:#eac3bc;padding:8px 11px;font-size:11px;margin-top:18px}
+    @media(max-width:660px){.project-manager{padding:17px}.project-manager form{grid-template-columns:1fr}.project-manager .wide{grid-column:auto}.project-header-actions{justify-content:space-between;width:100%}}
   </style>
 </head>
 <body>
@@ -207,7 +236,30 @@
     <div class="shell workspace">
       <aside class="profile-sidebar" aria-label="Hakkımda ve çalışma alanları"><div id="hakkimda"><div class="eyebrow">ABOUT / CONTACT</div><h2>Hakkımda</h2><p>Gömülü yazılım ve güç elektroniği uygulamaları üzerine çalışan bir elektrik-elektronik mühendisi. Bu sayfa eğitim platformundan çok, geliştirilen sistemlere ait bağımsız bir teknik kayıt ve açık paylaşım alanı.</p><div class="stack-list"><span>Embedded Software</span><span>Power Electronics</span><span>Control Systems</span></div></div><div id="stack"><div class="eyebrow">TOOLS / PLATFORMS</div><h2>Çalışma alanları</h2><p>Mikrodenetleyici çevre birimleri, zamanlama ve kontrol algoritmalarından haberleşme katmanlarına uzanan teknik notlar.</p><div class="stack-list"><span class="platform-st">STM32</span><span class="platform-ti">TI C2000</span><span>C / C++</span><span>PWM</span><span>ADC / DMA</span><span>PLL</span><span>RTOS</span></div></div></aside>
     <section class="project-area" id="projeler">
-      <div class="section-header"><div><h2>Proje kayıtları</h2><p>Platform, etiket veya zorluk seviyesine göre daralt.</p></div><span class="counter" id="results-count" aria-live="polite"></span></div>
+      <div class="section-header"><div><h2>Proje kayıtları</h2><p>Platform, etiket veya zorluk seviyesine göre daralt.</p></div><div class="project-header-actions"><span class="counter" id="results-count" aria-live="polite"></span><button class="project-add-btn" type="button" id="open-project-manager" aria-expanded="false" aria-controls="project-manager">Yönetici girişi</button></div></div>
+      <div class="project-manager" id="project-manager" hidden>
+        <div class="project-manager-head"><div><h3>Yeni proje yayımla</h3><p>Proje bilgilerini gir, tam kaynak kod paketini ZIP olarak ekle veya GitHub kaynak bağlantısı ver.</p></div><button class="copy-btn" type="button" id="close-project-manager" aria-label="Kapat">×</button></div>
+        <form id="project-admin-login">
+          <div class="wide"><p class="form-note">Proje yayımlamak için yönetici hesabınla giriş yap. Ziyaretçiler yalnızca projeleri inceleyebilir.</p></div>
+          <div><label class="field-label" for="project-login-email">E-posta</label><input type="email" id="project-login-email" required autocomplete="username"></div>
+          <div><label class="field-label" for="project-login-password">Şifre</label><input type="password" id="project-login-password" required minlength="8" autocomplete="current-password"></div>
+          <div class="wide publish-actions"><button type="submit" id="project-login-button">Yönetici olarak giriş yap</button><p class="project-feedback" id="project-login-status" role="status" aria-live="polite"></p></div>
+        </form>
+        <form id="project-publish-form" hidden>
+          <div><label class="field-label" for="new-project-title">Proje başlığı *</label><input id="new-project-title" name="title" maxlength="110" required placeholder="Örn. C2000 PLL–PWM kontrolü"></div>
+          <div><label class="field-label" for="new-project-platform">Platform *</label><input id="new-project-platform" name="platform" maxlength="50" list="project-platforms" required placeholder="Örn. TI C2000"><datalist id="project-platforms"><option value="STM32F429"><option value="TI C2000"><option value="Zynq / FPGA"><option value="AM243x"><option value="STM32H745"></datalist></div>
+          <div><label class="field-label" for="new-project-category">Kategori</label><input id="new-project-category" name="category" maxlength="65" placeholder="Örn. Digital Control"></div>
+          <div><label class="field-label" for="new-project-color">Platform rengi</label><div class="color-row"><input type="color" id="new-project-color" name="color" value="#a4c7e6" aria-label="Platform rengi seç"><input id="new-project-color-hex" maxlength="7" value="#a4c7e6" aria-label="HEX renk kodu"></div></div>
+          <div class="wide"><label class="field-label" for="new-project-summary">Kısa açıklama *</label><textarea id="new-project-summary" name="summary" maxlength="650" rows="2" required placeholder="Projenin amacı ve neler yaptığı…"></textarea></div>
+          <div class="wide"><span class="field-label">Zorluk seviyeleri * (birden fazla seçilebilir)</span><div class="level-checks"><label><input type="checkbox" name="project-level" value="Basit">Basit</label><label><input type="checkbox" name="project-level" value="Orta">Orta</label><label><input type="checkbox" name="project-level" value="Zor">Zor</label></div></div>
+          <div class="wide"><label class="field-label" for="new-project-tags">Etiketler (virgülle ayır)</label><input id="new-project-tags" name="tags" maxlength="250" placeholder="PLL, PWM, ADC, Control"></div>
+          <div class="wide"><label class="field-label" for="new-project-overview">Kapsam / teknik açıklama (her satır ayrı madde)</label><textarea id="new-project-overview" name="overview" maxlength="4000" placeholder="Donanım, çalışma prensibi, kullanılan çevre birimleri…"></textarea></div>
+          <div class="wide"><label class="field-label" for="new-project-notes">Test ve kurulum notları (her satır ayrı madde)</label><textarea id="new-project-notes" name="notes" maxlength="4000" placeholder="Derleme, yükleme, ölçümler, sınırlamalar…"></textarea></div>
+          <div><label class="field-label" for="new-project-file">Tam kaynak proje ZIP (en fazla 3 MB)</label><input id="new-project-file" name="file" type="file" accept=".zip,application/zip"><div class="form-note">Büyük Vivado/CCS projeleri için ZIP yerine GitHub bağlantısını kullanabilirsin.</div></div>
+          <div><label class="field-label" for="new-project-repo">GitHub kaynak bağlantısı</label><input id="new-project-repo" name="repoUrl" type="url" placeholder="https://github.com/kullanici/proje"><div class="form-note">ZIP veya GitHub bağlantısından en az biri zorunludur.</div></div>
+          <div class="wide publish-actions"><button type="submit" id="project-publish-button">Projeyi yayımla ↗</button><p class="project-feedback" id="project-publish-status" role="status" aria-live="polite"></p></div>
+        </form>
+      </div>
         <div class="filters" aria-label="Proje filtreleri">
           <div class="filter-top"><h3>Filtreler</h3><button type="button" id="clear-filters" class="clear">Tümünü temizle ↗</button></div>
           <div class="search-field"><label for="search" class="field-label">Proje ara</label>
@@ -239,7 +291,7 @@
 
   </main>
   <footer class="shell footer"><span>© <span id="year"></span> Ömer Faruk Arslan · Engineering project archive</span><span>Build notes, not tutorials.</span></footer>
-  <div class="modal-backdrop" id="modal-backdrop" role="presentation"><div class="project-modal" role="dialog" aria-modal="true" aria-label="Proje ayrıntıları" id="project-modal"><div class="modal-head"><button type="button" class="modal-close" id="modal-close" aria-label="Kapat">×</button><div class="modal-topline" id="detail-id"></div><h2 id="detail-title"></h2><p id="detail-desc"></p><div class="modal-pills" id="detail-pills"></div></div><div class="tabs" role="tablist" aria-label="Proje bölümleri"><button class="tab" type="button" role="tab" data-tab="overview" aria-selected="true">Genel bakış</button><button class="tab" type="button" role="tab" data-tab="code" aria-selected="false">Proje dosyaları</button><button class="tab" type="button" role="tab" data-tab="notes" aria-selected="false">Çalışma notları</button></div><div class="tab-panel" id="detail-content" role="tabpanel"></div><div class="modal-footer"><span>ARCHIVE / OPEN NOTES</span><button class="share" type="button" id="copy-link">Proje bağlantısını kopyala ↗</button></div></div></div>
+  <div class="modal-backdrop" id="modal-backdrop" role="presentation"><div class="project-modal" role="dialog" aria-modal="true" aria-label="Proje ayrıntıları" id="project-modal"><div class="modal-head"><button type="button" class="modal-close" id="modal-close" aria-label="Kapat">×</button><div class="modal-topline" id="detail-id"></div><h2 id="detail-title"></h2><p id="detail-desc"></p><div class="modal-pills" id="detail-pills"></div></div><div class="tabs" role="tablist" aria-label="Proje bölümleri"><button class="tab" type="button" role="tab" data-tab="overview" aria-selected="true">Genel bakış</button><button class="tab" type="button" role="tab" data-tab="code" aria-selected="false">Proje dosyaları</button><button class="tab" type="button" role="tab" data-tab="notes" aria-selected="false">Çalışma notları</button></div><div class="tab-panel" id="detail-content" role="tabpanel"></div><div class="modal-footer"><span>ARCHIVE / OPEN NOTES</span><button type="button" class="project-admin-delete" id="delete-current-project" hidden>Projeyi sil</button><button class="share" type="button" id="copy-link">Proje bağlantısını kopyala ↗</button></div></div></div>
   <script>
     // Example project entries. Replace summaries and code with your own tested records.
     // Multiple difficulty levels are supported by the 'levels' array.
@@ -303,15 +355,20 @@
         el('empty-clear').addEventListener('click',resetFilters);
         return;
       }
-      el('project-list').innerHTML=items.map(project=>`<article tabindex="0" role="button" aria-label="${escapeHtml(project.title)} projesini aç" data-project="${project.id}" data-platform="${escapeHtml(project.platform)}" class="project-card"><div class="card-top"><span class="card-type"><span class="type-icon" aria-hidden="true">${project.platform==='TI C2000'?'TI':'ST'}</span>${escapeHtml(project.platform)}</span><span>#${project.number}</span></div><h3 class="card-title">${escapeHtml(project.title)}</h3><p class="card-desc">${escapeHtml(project.summary)}</p><div class="card-footer">${project.levels.map(pill).join('')}${project.tags.slice(0,2).map(tag=>`<span class="mini-tag">${escapeHtml(tag)}</span>`).join('')}<span class="card-arrow">↗</span></div></article>`).join('');
+      el('project-list').innerHTML=items.map(project=>`<article tabindex="0" role="button" aria-label="${escapeHtml(project.title)} projesini aç" data-project="${project.id}" data-platform="${escapeHtml(project.platform)}" style="${platformStyle(project)}" class="project-card"><div class="card-top"><span class="card-type"><span class="type-icon" aria-hidden="true">${project.platform==='TI C2000'?'TI':project.platform.startsWith('STM')?'ST':'HW'}</span>${escapeHtml(project.platform)}</span><span>#${project.number}</span></div><h3 class="card-title">${escapeHtml(project.title)}</h3><p class="card-desc">${escapeHtml(project.summary)}</p><div class="card-footer">${project.levels.map(pill).join('')}${project.tags.slice(0,2).map(tag=>`<span class="mini-tag">${escapeHtml(tag)}</span>`).join('')}<span class="card-arrow">↗</span></div></article>`).join('');
     }
     function resetFilters() {
       state.query=''; state.platform=''; state.tag=''; state.levels.clear();
       el('search').value='';el('platform').value='';render();
     }
     function detailMarkup(project) {
+      if (state.tab==='code' && (project.archive || project.repoUrl)) {
+        const downloadUrl = `/.netlify/functions/projects?download=${encodeURIComponent(project.id)}`;
+        const repo = typeof project.repoUrl==='string' && /^https:\/\/github\.com\//.test(project.repoUrl) ? project.repoUrl : '';
+        return `<div class="project-source-panel"><h3>Projenin tam kaynakları</h3><p>Bu proje kısa bir kod örneği değil, indirilip incelenebilen kaynak paketidir.</p><div class="project-source-links">${project.archive?`<a href="${downloadUrl}" download>Kaynak projeyi indir (.ZIP) ↓</a>`:''}${repo?`<a href="${escapeHtml(repo)}" target="_blank" rel="noopener noreferrer">GitHub kaynak deposu ↗</a>`:''}</div><p>${escapeHtml(project.filename || 'Kaynak dosyaları proje deposunda bulunur.')}</p><p class="source-note">ZIP dosyası yerel geliştirme ortamında açılarak incelenebilir. Her projeyi yalnızca paylaşma iznin olan kaynaklarla yayımla.</p></div>`;
+      }
       if (state.tab==='overview') return `<h3>Proje özeti</h3><p>${escapeHtml(project.summary)}</p><h3>Kapsam</h3><ul>${project.overview.map(item=>`<li>${escapeHtml(item)}</li>`).join('')}</ul>`;
-      if (state.tab==='notes') return `<h3>Çalışma notları</h3><ul>${project.notes.map(item=>`<li>${escapeHtml(item)}</li>`).join('')}</ul><p class="source-note">Örnek kayıt: Bu notları proje sırasında alınan gerçek ölçümler ve kararlarla güncelleyebilirsin.</p>`;
+      if (state.tab==='notes') return `<h3>Çalışma notları</h3><ul>${project.notes.map(item=>`<li>${escapeHtml(item)}</li>`).join('')}</ul>${project.archive || project.repoUrl ? '' : '<p class="source-note">Örnek kayıt; gerçek test notlarıyla güncellenmelidir.</p>'}`;
       return `<p class="file-notice">Örnek proje dosyaları · Mevcut kod kesiti ve notlardan oluşturuldu; tam, derlenebilir kaynak paketi değildir.</p><div class="file-explorer"><nav class="file-tree" aria-label="Proje dosyaları"><div class="tree-heading">${projectFiles(project).length} DOSYA</div>${fileTreeMarkup(projectFiles(project))}</nav><section class="file-viewer" aria-label="Dosya içeriği" id="file-viewer"></section></div>`;
     }
     function projectFiles(project) {
@@ -358,16 +415,22 @@
         document.body.appendChild(link);link.click();link.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);
       });
     }
+    function platformStyle(project) {
+      const c = /^#[0-9a-fA-F]{6}$/.test(project.color || '') ? project.color : '';
+      return c ? `--platform-color:${c};--platform-line:color-mix(in srgb, ${c} 38%, #363636);--platform-bg:color-mix(in srgb, ${c} 13%, #1b1b1b)` : '';
+    }
     function renderDetail() {
       const project=PROJECTS.find(p=>p.id===state.activeId);if(!project)return;
       el('project-modal').dataset.platform=project.platform;
+      el('project-modal').setAttribute('style',platformStyle(project));
+      el('delete-current-project').hidden = !(window.portfolioAdmin && (project.archive || project.repoUrl));
       el('detail-id').textContent=`PROJECT / ${project.number}  ·  ${project.platform}`;
       el('detail-title').textContent=project.title;
       el('detail-desc').textContent=project.summary;
       el('detail-pills').innerHTML=project.levels.map(pill).join('')+project.tags.map(tag=>`<span class="mini-tag">${escapeHtml(tag)}</span>`).join('');
       document.querySelectorAll('[data-tab]').forEach(b=>b.setAttribute('aria-selected',String(b.dataset.tab===state.tab)));
       el('detail-content').innerHTML=detailMarkup(project);
-      if(state.tab==='code')renderFile(project);
+      if(state.tab==='code' && !project.archive && !project.repoUrl)renderFile(project);
     }
     el('detail-content').addEventListener('click',event=>{
       const button=event.target.closest('[data-file]');if(!button)return;
@@ -426,5 +489,6 @@
     const directProject=location.hash.match(/^#project\/(.+)$/)?.[1];if(directProject)openProject(directProject,false);
   </script>
   <script src="/assets/documents.js" defer></script>
+  <script src="/assets/projects.js" defer></script>
 </body>
 </html>

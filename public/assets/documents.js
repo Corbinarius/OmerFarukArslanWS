@@ -21,7 +21,8 @@
     $('document-upload').hidden = !data.admin;
     $('document-logout').hidden = !data.authenticated;
     $('manage-documents').textContent = data.admin ? 'PDF ekle' : 'Yönetici girişi';
-    if (data.authenticated && !data.admin) $('document-auth-status').textContent = 'Bu hesabın doküman yükleme yetkisi yok. Yönetici rolü gerekli.';
+    if (data.authenticated && !data.admin) $('document-auth-status').textContent = 'Bu hesabın yönetici yetkisi yok. Admin rolü gerekli.';
+    window.dispatchEvent(new CustomEvent('portfolio:session', { detail: data }));
   }
   function render() {
     const query = $('document-search').value.toLocaleLowerCase('tr').trim();
@@ -41,6 +42,7 @@
       render();
     } catch { $('document-status').textContent = 'Dokümanlar yüklenemedi.'; $('document-retry').hidden = false; }
   }
+  window.addEventListener('portfolio:refresh-auth', async () => { try { session(await api(authEndpoint)); } catch {} });
   $('document-search').addEventListener('input', render);
   $('document-retry').addEventListener('click', load);
   $('manage-documents').addEventListener('click', () => panel($('document-management').hidden));

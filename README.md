@@ -70,13 +70,12 @@ python -m http.server 8000 --directory public
 
 Ardından `http://localhost:8000` adresini açın. Bu statik önizlemede Dokümanlar API'si ve kullanıcı girişi çalışmaz; çalışması için Netlify Functions gerekir.
 
-## Yeni proje eklemek
+## Örnek projelerin durumu
 
-- Proje kataloğu şu anda `public/index.html` içindeki `PROJECTS` dizisinde bulunuyor. Başlık, platform, `levels`, etiket, özet ve notları burada güncelleyin.
-- `levels: ['Orta', 'Zor']` gibi birden çok zorluk seçebilirsiniz. Platform renkleri mevcut CSS'deki `data-platform` kurallarıyla belirlenir.
-- Sitenin dosya görüntüleyicisi **örnek dosyalar üretiyor**; gerçek proje yapısını sunmak için orijinal dosyaları ekleyip görüntüleyiciyi veri kaynağına bağlamanız gerekir.
-- Gerçek proje kaynaklarını `projects/<proje-kimligi>/` altında saklamanız ve README dosyalarına pin eşlemeleri, derleme/yükleme adımları, kart/IDE sürümleri, test ve ölçüm notları eklemeniz önerilir. Kaynak depoya ekleme işlemi tek başına web arayüzünde otomatik listeleme yapmaz.
-- Firma izinleri, üçüncü taraf lisanslar, anahtarlar ve kurum içi bilgiler için yayımlamadan önce denetim yapın.
+- Kaynak örneklerini temsil eden önceki dokuz proje `public/index.html` içinde kalıyor; bu kayıtların kısa kod kesitlerini derlenebilir proje diye değerlendirmeyin.
+- Yeni, gerçek projeleri **web sitesindeki Proje kayıtları → Yönetici girişi → + Proje ekle** yolundan yayımlayın. Ayrıntılar aşağıdaki **Yeni özellik: Sitenin içinden proje yayımlama** bölümünde bulunuyor.
+- Eski örnek projeleri düzenlemek için isterseniz kodda `PROJECTS` dizisini değiştirin. Yeni yayımlanan projeler Blobs üzerinden geldiğinden GitHub commit'i gerektirmez.
+- Firma izinleri, üçüncü taraf lisanslar, anahtarlar ve kurum içi bilgiler için yayımlamadan önce kontrol yapın.
 
 ## Güvenlik ve kontroller
 
@@ -92,3 +91,38 @@ GitHub Actions bu komutları her `main` push'u ve pull request'te çalıştırı
 ## Lisans
 
 Üst seviye proje için lisans seçimi henüz kesinleştirilmedi. Kodun kamusal görüntülenebilir olması yeniden kullanım izninin otomatik verildiği anlamına gelmez. Açık kaynak olarak dağıtmak isterseniz uygun bir `LICENSE` dosyası ekleyin. Üçüncü taraf veri sayfaları ve üretici örnekleri bu lisansın kapsamına otomatik girmez.
+
+## Yeni özellik: Sitenin içinden proje yayımlama
+
+Bu sürümde proje listesinin üstünde **Yönetici girişi / + Proje ekle** düğmesi vardır.
+
+1. Netlify'da **Project configuration → Identity** bölümünden Identity'yi etkinleştirin, kendi e-postanızı davet edin, hesabınıza sunucudan `admin` rolü verin ve mümkünse davetsiz kaydı kapatın. Identity yapılandırılmadan giriş ve yeni proje ekleme çalışmaz.
+2. Sitenin **Proje kayıtları** bölümündeki **Yönetici girişi** düğmesine basın; e-posta ve şifrenizi aynı panelden girin.
+3. **+ Proje ekle** formundan proje adı, platform, renk, bir veya birden fazla zorluk seviyesi, etiketler, teknik açıklama ve test notlarını girin.
+4. **3 MB veya daha küçük orijinal kaynak ZIP'i** yükleyin. Daha büyük bir proje için GitHub kaynak repo bağlantısı verin. Her iki yöntem birlikte de kullanılabilir.
+5. **Projeyi yayımla** butonuna basın. Proje Netlify Blobs'ta saklanır; otomatik yeniden deploy gerekmeden ziyaretçilerin proje listesindeki filtrelerde ve detay ekranlarında görünür.
+6. Giriş yapmış yönetici, yayımladığı projeyi detay penceresindeki **Projeyi sil** düğmesinden geri kaldırabilir. Yanlışlıkla silinmeyi azaltmak için tarayıcı onayı istenir.
+
+### Tasarım ve veri depolama
+
+- Referans tasarımın antrasit/gri zemin ve soft mavi/kızıl geçişleri aynen bırakıldı.
+- Eski dokuz örnek kayıt HTML içinde bulunmaya devam eder. Bu örnekler tam, derlenebilir proje değildir.
+- Yeni projeler `netlify/functions/projects.mts` API'siyle `portfolio-projects` adlı **site-geneli Netlify Blobs deposuna** yazılır. ZIP dosyaları ve meta veriler farklı anahtarlarda tutulur; yeni Netlify deploy'ları bu içeriği silmez.
+- Herkese açık olan işlemler: listeleme ve kaynak paketini indirme. Yönetici gerektiren işlemler: yayımlama ve silme. `admin` rolü yalnızca Netlify Identity üzerinde atanır; tarayıcıdaki gizli butonlar güvenlik sınırı değildir.
+- Netlify Functions'ın ikili yükleme sınırları nedeniyle ZIP üst sınırı 3 MB'tır. Büyük STM32CubeIDE/Vivado projeleri için temizlenmiş GitHub reposu önerilir. Kaynak paketlerine gizli anahtar, kuruma ait bilgiler veya yayın hakkınız olmayan dosyaları eklemeyin.
+- Yeni projelerin ZIP'lerinin içeriği tarayıcı içinde dosya ağacı olarak gösterilmez; doğrudan ZIP indirilir. GitHub linki varsa kaynak depo da açılabilir.
+- Bu arayüz GitHub'a bağlı Netlify'da çalışır. Salt statik HTML açıldığında Netlify Identity / Blobs mevcut olmadığı için canlı proje ekleme çalışmaz.
+
+### Değişen veya eklenen dosyalar
+
+```text
+public/index.html
+public/assets/documents.js
+public/assets/projects.js       (yeni)
+netlify/functions/projects.mts   (yeni)
+tests/site.test.cjs
+tests/projects.test.cjs          (yeni)
+README.md
+```
+
+GitHub'a yeni sürümün **içindeki dosyaları mevcut klasörleri koruyarak** yükleyin. `main` dalına push yaptıktan sonra Netlify otomatik deploy yapar. Yeni dosyalarda bir GitHub Actions/typecheck hatası varsa deploy başarılı olana kadar canlı sitede değişiklik görünmez.
