@@ -1,0 +1,20 @@
+# Local dependencies and build output
+node_modules/
+.netlify/
+dist/
+build/
+coverage/
+*.log
+npm-debug.log*
+
+# Credentials and machine-specific state
+.env
+.env.*
+!.env.example
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Local generated PDF material (not automatically public)
+.tmp/

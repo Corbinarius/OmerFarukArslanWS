@@ -1,0 +1,12 @@
+# GitHub-connected Netlify deployment.
+# Only public/ is sent as static site content; server code is deployed as Functions.
+[build]
+  publish = "public"
+  functions = "netlify/functions"
+  command = "npm run check"
+
+[functions]
+  node_bundler = "esbuild"
+
+[build.environment]
+  NODE_VERSION = "22"

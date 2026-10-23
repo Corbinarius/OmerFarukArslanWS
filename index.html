@@ -1,0 +1,430 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="color-scheme" content="dark" />
+  <meta name="description" content="Ömer Faruk Arslan — embedded sistemler, STM32F429 ve TI C2000 çalışma arşivi." />
+  <title>Ömer Faruk Arslan — Proje Arşivi</title>
+  <style>
+    :root {
+      --bg:#141414; --bg-soft:#1b1b1b; --surface:#202020; --surface-2:#282828;
+      --surface-hover:#252525; --line:#363636; --line-soft:#2b2b2b;
+      --text:#ededed; --text-mid:#bcbcbc; --muted:#a0a0a0;
+      --accent:#dedede; --accent-2:#b8b8b8; --accent-bg:rgba(255,255,255,.07);
+      --easy:#afd0b7; --easy-bg:#233129; --easy-line:#45634d;
+      --medium:#e0c18d; --medium-bg:#332d23; --medium-line:#6c5738;
+      --hard:#cbb8df; --hard-bg:#302939; --hard-line:#605071;
+      --radius:8px; --mono:ui-monospace,SFMono-Regular,Consolas,"Liberation Mono",monospace;
+      --sans:"Helvetica Neue","Segoe UI",sans-serif;
+    }
+    *,*::before,*::after {box-sizing:border-box}
+    html {scroll-behavior:smooth}
+    body {margin:0;min-height:100vh;isolation:isolate;background:var(--bg);color:var(--text);font-family:var(--sans);-webkit-font-smoothing:antialiased;line-height:1.55}
+    body::before,body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:-1}
+    body::before{inset:-6%;animation:ambient-drift 24s ease-in-out infinite alternate;background:radial-gradient(ellipse at 0% 8%,rgba(112,157,196,.13),transparent 52%),radial-gradient(ellipse at 100% 80%,rgba(180,112,108,.09),transparent 48%),linear-gradient(135deg,#181b1e 0%,#141414 48%,#1b1818 100%)}
+    body::after{inset:-48px;animation:grid-drift 32s ease-in-out infinite alternate;background-image:linear-gradient(rgba(190,200,210,.045) 1px,transparent 1px),linear-gradient(90deg,rgba(190,200,210,.045) 1px,transparent 1px),radial-gradient(circle,rgba(205,214,222,.17) 1px,transparent 1.5px);background-size:48px 48px,48px 48px,192px 192px;background-position:-1px -1px,-1px -1px,23px 23px;mask-image:linear-gradient(90deg,#000,rgba(0,0,0,.28) 35%,rgba(0,0,0,.28) 65%,#000)}
+    @keyframes ambient-drift{from{transform:translate3d(-1%,-1%,0) scale(1);opacity:.8}to{transform:translate3d(2%,2%,0) scale(1.04);opacity:1}}
+    @keyframes grid-drift{from{transform:translate3d(0,0,0);opacity:.6}to{transform:translate3d(24px,24px,0);opacity:1}}
+    @media(prefers-reduced-motion:reduce){body::before,body::after{animation:none!important;transform:none}}
+    body.modal-open {overflow:hidden}
+    button,input,select {font:inherit}
+    button {cursor:pointer}
+    button:focus-visible,input:focus-visible,select:focus-visible,a:focus-visible {outline:2px solid var(--accent);outline-offset:3px}
+    a {color:inherit;text-decoration:none}
+    a:hover {color:var(--accent)}
+    .shell {width:min(1160px,calc(100% - 56px));margin-inline:auto}
+    .topbar {height:77px;border-bottom:1px solid var(--line-soft);display:flex;align-items:center;justify-content:space-between}
+    .brand {display:flex;align-items:center;gap:12px;font-weight:600;font-size:14px;letter-spacing:.01em}
+    .brand-mark {display:flex;align-items:center;justify-content:center;width:35px;height:35px;border:1px solid #4c4c4c;border-radius:10px;background:#2d2d2d;color:#d8d8d8;font:700 15px var(--mono)}
+    .brand-mark span{color:#ababab}
+    .nav {display:flex;align-items:center;gap:31px;color:var(--text-mid);font-size:13px}
+    .nav a:hover {color:var(--text)}
+    .nav .nav-archive{color:var(--accent)}
+    .top-status {display:inline-flex;align-items:center;gap:8px;border:1px solid var(--line);border-radius:999px;padding:6px 12px;font:11px var(--mono);color:var(--muted)}
+    .status-dot{width:6px;height:6px;border-radius:100%;background:#b6b6b6}
+    .eyebrow{font:11px var(--mono);color:var(--accent);letter-spacing:.13em;text-transform:uppercase}
+    .section-header{margin-top:0;margin-bottom:24px;display:flex;justify-content:space-between;align-items:end;gap:15px}
+    .section-header h2{font-size:20px;letter-spacing:-.025em;font-weight:600;margin:0 0 4px}
+    .section-header p{font-size:13px;color:var(--muted);margin:0}
+    .counter{font:12px var(--mono);color:var(--muted);white-space:nowrap}
+    .workspace{display:grid;grid-template-columns:240px minmax(0,1fr);gap:36px;align-items:start;padding-top:48px;padding-bottom:64px}
+    .filters{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,.85fr);gap:12px;background:#1a1a1a;border:1px solid var(--line-soft);border-radius:var(--radius);padding:14px;margin-bottom:16px}
+    .filter-top{grid-column:1/-1;display:flex;align-items:center;justify-content:space-between}
+    .filter-top h3 {font-size:13px;font-weight:640;margin:0}
+    .clear{color:var(--muted);font-size:11px;background:none;border:0;padding:2px;white-space:nowrap}
+    .clear:hover{color:var(--accent)}
+    .field-label{display:block;font-size:11px;letter-spacing:.025em;color:var(--text-mid);font-weight:600;margin-bottom:6px}
+    .search-wrap{position:relative}
+    .search-icon{position:absolute;top:10px;left:11px;width:15px;height:15px;color:var(--muted);pointer-events:none}
+    .search,.select{width:100%;height:34px;border:1px solid #3a3a3a;border-radius:6px;background:#212121;color:var(--text);font-size:12px;outline:none}
+    .search{padding:0 10px 0 34px}
+    .search::placeholder{color:#8d8d8d}
+    .select{padding:0 11px;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='none' stroke='%23969696' stroke-width='1.6' viewBox='0 0 12 12'%3E%3Cpath d='m2 4 4 4 4-4'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 11px center}
+    .filter-group{min-width:0}
+    .filter-rule{height:1px;background:var(--line-soft);margin:22px 0 19px}
+    .level-buttons{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px}
+    .level-option{gap:8px;width:100%;display:flex;align-items:center;justify-content:space-between;border:1px solid transparent;color:var(--text-mid);background:transparent;padding:7px 8px;border-radius:6px;font-size:12px;text-align:left;transition:background .15s,border-color .15s}
+    .level-option:hover{background:#262626}
+    .level-option[aria-pressed="true"]{border-color:#5a5a5a;background:var(--accent-bg);color:var(--text)}
+    .level-left{display:inline-flex;align-items:center;gap:10px}
+    .level-dot{width:7px;height:7px;border-radius:50%;background:currentColor}
+    .level-option[data-level="Basit"] .level-dot{color:var(--easy)}
+    .level-option[data-level="Orta"] .level-dot{color:var(--medium)}
+    .level-option[data-level="Zor"] .level-dot{color:var(--hard)}
+    .level-option[data-level="Basit"][aria-pressed="true"]{color:var(--easy);background:var(--easy-bg);border-color:var(--easy-line)}
+    .level-option[data-level="Orta"][aria-pressed="true"]{color:var(--medium);background:var(--medium-bg);border-color:var(--medium-line)}
+    .level-option[data-level="Zor"][aria-pressed="true"]{color:var(--hard);background:var(--hard-bg);border-color:var(--hard-line)}
+    .level-count{display:none;font:11px var(--mono);color:var(--muted)}
+    .filter-hint{font:11px/1.6 var(--sans);color:#7d7d7d;margin:10px 0 0}
+    .tag-filter-list{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
+    .tag-filter{border-radius:6px;border:1px solid #373737;background:#212121;color:#a0a0a0;font:11px var(--mono);padding:5px 8px}
+    .tag-filter:hover{border-color:#777777;color:#e1e1e1}
+    .tag-filter[aria-pressed="true"]{background:var(--accent-bg);color:#e1e1e1;border-color:#6e6e6e}
+    .active-bar{display:flex;align-items:center;gap:9px;flex-wrap:wrap;min-height:0;margin-bottom:14px}
+    .active-bar:empty{display:none}
+    .filter-token{border:1px solid #515151;border-radius:6px;background:#2c2c2c;color:#cecece;font:11px var(--mono);padding:5px 8px;display:inline-flex;align-items:center;gap:7px}
+    .filter-token b{font-weight:400;color:#dedede}
+    .result-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+    .project-card{min-width:0;min-height:246px;background:var(--bg-soft);border:1px solid var(--line);border-radius:var(--radius);padding:24px 24px 22px;display:flex;flex-direction:column;transition:border-color .17s,background .17s,transform .17s;cursor:pointer}
+    .project-card:hover{border-color:#646464;background:#222222;transform:translateY(-1px)}
+    .project-card:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+    .card-top{display:flex;align-items:center;justify-content:space-between;color:var(--muted);font:11px var(--mono);gap:10px}
+    .card-type{display:flex;gap:7px;align-items:center}
+    .type-icon{width:23px;height:23px;display:flex;align-items:center;justify-content:center;color:#c1c1c1;border:1px solid #444444;background:#2d2d2d;border-radius:7px;font-size:13px}
+    .card-title{margin:21px 0 8px;font-weight:600;font-size:17px;letter-spacing:-.028em;line-height:1.35}
+    .card-desc{margin:0;font-size:13px;line-height:1.75;color:var(--text-mid)}
+    .card-footer{display:flex;flex-wrap:wrap;align-items:center;gap:7px;margin-top:auto;padding-top:23px}
+    .level-pill{border:1px solid transparent;border-radius:5px;padding:4px 7px;font:10px var(--mono);letter-spacing:.01em;white-space:nowrap}
+    .level-pill.easy{background:var(--easy-bg);color:var(--easy);border-color:var(--easy-line)}
+    .level-pill.medium{background:var(--medium-bg);color:var(--medium);border-color:var(--medium-line)}
+    .level-pill.hard{background:var(--hard-bg);color:var(--hard);border-color:var(--hard-line)}
+    .mini-tag{border:1px solid #3e3e3e;background:#232323;color:#9b9b9b;font:10px var(--mono);border-radius:5px;padding:4px 7px;white-space:nowrap}
+    .card-arrow{margin-left:auto;color:#858585;font:16px var(--mono)}
+    .empty-state{grid-column:1/-1;background:#1b1b1b;border:1px dashed #454545;border-radius:12px;padding:55px 20px;text-align:center}
+    .empty-state h3{font-weight:600;font-size:15px;margin:0 0 8px}
+    .empty-state p{font-size:13px;color:var(--muted);margin:0 0 20px}
+    .empty-state button{border:1px solid #646464;background:#323232;color:#dadada;border-radius:8px;padding:9px 13px;font-size:12px}
+    .stack-list{display:flex;flex-wrap:wrap;gap:8px;margin-top:17px}
+    .stack-list span{background:#1f1f1f;color:#afafaf;border:1px solid #3d3d3d;padding:6px 10px;border-radius:6px;font:11px var(--mono)}
+    .footer{border-top:1px solid var(--line-soft);padding:24px 0 35px;display:flex;justify-content:space-between;gap:10px;font:11px var(--mono);color:#7e7e7e}
+    .footer a{color:#b9b9b9}
+    .modal-backdrop{position:fixed;inset:0;background:rgba(8,8,8,.76);z-index:30;display:none;overflow-y:auto;padding:32px 18px}
+    .modal-backdrop.open{display:flex;justify-content:center;align-items:flex-start}
+    .project-modal{width:min(1040px,100%);background:#1c1c1c;border:1px solid #4d4d4d;border-radius:10px;box-shadow:0 30px 90px rgba(0,0,0,.48);margin:auto 0}
+    .modal-head{padding:27px 31px 23px;border-bottom:1px solid var(--line);position:relative}
+    .modal-topline{font:11px var(--mono);color:#9f9f9f;letter-spacing:.04em;padding-right:40px}
+    .modal-head h2{font-size:27px;font-weight:600;letter-spacing:-.03em;line-height:1.25;margin:14px 0 9px}
+    .modal-head p{font-size:13px;color:#b1b1b1;margin:0 0 18px;max-width:620px;line-height:1.75}
+    .modal-close{position:absolute;right:24px;top:22px;border:1px solid #4e4e4e;border-radius:8px;color:#cecece;background:#2e2e2e;width:32px;height:32px;font-size:20px;line-height:1}
+    .modal-pills{display:flex;flex-wrap:wrap;gap:7px}
+    .tabs{display:flex;padding:0 31px;gap:26px;border-bottom:1px solid var(--line)}
+    .tab{padding:16px 0 13px;border:0;background:none;color:#9d9d9d;font-size:12px;border-bottom:2px solid transparent}
+    .tab[aria-selected="true"]{color:#d4d4d4;border-bottom-color:#bebebe}
+    .tab:hover{color:#e7e7e7}
+    .tab-panel{padding:28px 31px 35px;min-height:210px}
+    .tab-panel h3{font-size:13px;margin:0 0 12px;font-weight:600;color:#e5e5e5}
+    .tab-panel p,.tab-panel li{font-size:13px;color:#adadad;line-height:1.9}
+    .tab-panel p{margin:0 0 18px}
+    .tab-panel ul{padding-left:19px;margin:0}
+    .snippet-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;gap:10px}
+    .snippet-name{font:11px var(--mono);color:#aeaeae}
+    .copy-btn{border:1px solid #4d4d4d;border-radius:7px;color:#d4d4d4;background:#2e2e2e;font:11px var(--mono);padding:7px 11px}
+    pre{white-space:pre;overflow-x:auto;border:1px solid #3a3a3a;background:#161616;color:#cccccc;padding:17px;border-radius:10px;font:12px/1.72 var(--mono);margin:0}
+    .source-note{font-size:11px!important;color:#838383!important;margin:11px 0 0!important}
+    .modal-footer{padding:13px 31px 17px;border-top:1px solid var(--line);display:flex;justify-content:space-between;gap:12px;align-items:center;font:11px var(--mono);color:#868686}
+    .modal-footer .share{background:transparent;border:0;font:11px var(--mono);color:#c3c3c3}
+    .project-area{min-width:0;scroll-margin-top:24px}
+    .profile-sidebar{position:sticky;top:28px;display:grid;gap:32px;padding:24px 22px;border:1px solid var(--line-soft);border-radius:var(--radius);background:var(--bg-soft)}
+    .profile-sidebar h2{font-size:18px;font-weight:600;letter-spacing:-.025em;margin:12px 0}
+    .profile-sidebar p{font-size:13px;line-height:1.85;color:var(--text-mid);margin:0}
+    .profile-sidebar .eyebrow{font-size:10px;color:var(--muted)}
+    .profile-sidebar #stack{border-top:1px solid var(--line-soft);padding-top:28px}
+    #hakkimda,#stack{scroll-margin-top:28px}
+    .difficulty-field,.tags-field{grid-column:1/-1;min-width:0}
+    .difficulty-field{display:flex;align-items:center;gap:12px}.difficulty-field>.field-label{margin:0;white-space:nowrap}.difficulty-field .level-buttons{flex:1}.tags-field{border-top:1px solid var(--line-soft);padding-top:10px}.tags-field summary{cursor:pointer;color:var(--text-mid);font-size:11px;font-weight:600;width:fit-content}.tags-field summary:focus-visible{outline:2px solid var(--accent);outline-offset:4px}
+    .filter-hint{color:var(--muted)}
+    [data-platform="STM32F429"]{--platform-color:#a4c7e6;--platform-line:#3b566e;--platform-bg:#202b35}
+    [data-platform="TI C2000"]{--platform-color:#e4aaa8;--platform-line:#704644;--platform-bg:#322424}
+    .project-card{border-top:2px solid var(--platform-line)}
+    .project-card .card-type{color:var(--platform-color)}
+    .project-card .type-icon{color:var(--platform-color);border-color:var(--platform-line);background:var(--platform-bg);font:600 10px var(--mono);width:28px;height:26px;border-radius:5px}
+    .project-card:hover{border-color:var(--platform-line);background:var(--bg-soft)}
+    .project-card:hover .card-arrow{color:var(--platform-color)}
+    .project-modal[data-platform]{border-top:2px solid var(--platform-line)}
+    .project-modal .modal-topline{color:var(--platform-color,var(--muted))}
+    .project-modal .tab[aria-selected="true"]{color:var(--platform-color);border-bottom-color:var(--platform-color)}
+    .filters[data-platform] .select{color:var(--platform-color);border-color:var(--platform-line);background-color:var(--platform-bg)}
+    .stack-list .platform-st{color:#a4c7e6;background:#202b35;border-color:#3b566e}
+    .stack-list .platform-ti{color:#e4aaa8;background:#322424;border-color:#704644}
+    @media (min-width:1100px){.filters{grid-template-columns:minmax(0,1fr) minmax(0,.85fr) minmax(0,1.2fr)}.difficulty-field{grid-column:auto;display:block}.difficulty-field>.field-label{margin-bottom:6px}.tags-field{grid-column:1/-1}}
+    @media (max-width:1000px){.workspace{grid-template-columns:210px minmax(0,1fr);gap:24px}.profile-sidebar{padding:20px 18px}.result-list{grid-template-columns:1fr}.project-card{min-height:210px}}
+    @media (max-width:760px){.workspace{grid-template-columns:1fr;padding-top:32px;gap:28px}.profile-sidebar{position:static;grid-template-columns:1fr 1fr;gap:24px}.profile-sidebar #stack{padding-top:0;padding-left:24px;border-top:0;border-left:1px solid var(--line-soft)}.result-list{grid-template-columns:repeat(2,minmax(0,1fr))}}
+    @media (max-width:660px){.shell{width:min(100% - 32px,1160px)}.nav{gap:17px}.nav a:nth-child(2),.top-status{display:none}.topbar{height:65px}.brand{font-size:12px}.profile-sidebar{grid-template-columns:1fr}.profile-sidebar #stack{padding:24px 0 0;border-left:0;border-top:1px solid var(--line-soft)}.filters{padding:12px;gap:12px;grid-template-columns:1fr}.search-field,.filter-group{grid-column:1/-1}.level-option{padding:8px 6px}.level-left{gap:6px}.result-list{grid-template-columns:1fr}.footer{flex-direction:column}.modal-backdrop{padding:12px}.modal-head,.tab-panel{padding:21px}.tabs{padding:0 21px}.modal-head h2{font-size:23px}.modal-footer{padding:12px 21px}}
+    @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+    .nav .nav-archive{color:var(--text);text-decoration:underline;text-underline-offset:8px;text-decoration-color:#747474}
+    .project-card:hover .card-arrow{color:var(--text)}
+    .search:focus,.select:focus{border-color:#a0a0a0}
+    .tag-filter[aria-pressed="true"],.level-option[aria-pressed="true"]{border-color:#a0a0a0}
+    .file-notice{font-size:11px!important;color:var(--muted)!important;margin:0 0 16px!important}
+    .file-explorer{display:grid;grid-template-columns:220px minmax(0,1fr);border:1px solid var(--line);border-radius:8px;overflow:hidden;background:#171717}
+    .file-tree{padding:16px 0;border-right:1px solid var(--line);background:#202020;min-width:0}
+    .tree-heading{font:10px var(--mono);color:var(--muted);letter-spacing:.1em;padding:0 16px 14px}
+    .file-tree ul{list-style:none;margin:0;padding:0}
+    .file-tree li{margin:0;font:12px/1.5 var(--mono)}
+    .tree-folder>ul{padding-left:14px;border-left:1px solid #363636;margin-left:18px}
+    .tree-folder summary{padding:9px 16px;cursor:pointer;color:var(--text-mid);font:12px var(--mono)}
+    .file-entry{display:flex;gap:9px;text-align:left;width:100%;padding:9px 16px;border:0;border-left:2px solid transparent;background:transparent;color:var(--text-mid);font:11px/1.5 var(--mono);overflow-wrap:anywhere}
+    .file-entry:hover,.tree-folder summary:hover{background:#282828;color:var(--text)}
+    .file-entry[aria-current="true"]{background:var(--platform-bg);border-left-color:var(--platform-color);color:var(--platform-color)}
+    .file-viewer{min-width:0;display:flex;flex-direction:column}
+    .file-toolbar{display:flex;align-items:center;justify-content:space-between;gap:12px;border-bottom:1px solid var(--line);padding:12px 16px;flex-wrap:wrap}
+    .file-path{font:11px var(--mono);color:var(--text-mid);overflow-wrap:anywhere}
+    .file-actions{display:flex;gap:6px}.file-actions .copy-btn{padding:6px 9px;background:#252525;border-color:var(--line);color:var(--text-mid)}
+    .file-viewer pre{border:0;border-radius:0;margin:0;min-height:300px;max-height:480px;background:#171717;font-size:12px;line-height:1.85;tab-size:4}
+    .file-meta{display:block;border-top:1px solid var(--line);padding:9px 16px;font:10px var(--mono);color:var(--muted);margin-top:auto}
+    .tree-folder summary:focus-visible{outline:2px solid var(--accent);outline-offset:-3px}
+    @media(max-width:660px){.file-explorer{grid-template-columns:1fr}.file-tree{border-right:0;border-bottom:1px solid var(--line);max-height:230px;overflow:auto}.file-viewer pre{min-height:220px;max-height:360px}.tabs{gap:20px}.tab{white-space:nowrap}.file-toolbar{padding:12px}.file-viewer pre{padding:12px}}
+    .documents{margin-top:40px;padding-top:28px;border-top:1px solid var(--line);scroll-margin-top:24px}
+    .documents .section-header{align-items:center}.documents .section-header p{max-width:400px}
+    .document-panel{padding:20px;background:var(--bg-soft);border:1px solid var(--line);border-radius:8px;margin-bottom:22px}
+    .document-panel h3{font-size:14px;margin:0 0 16px}.document-panel .search{padding-left:10px;margin-bottom:14px;max-width:380px;display:block}
+    .document-actions{display:flex;align-items:center;gap:16px;margin:14px 0}.document-panel p,#document-status{font-size:12px;color:var(--text-mid)}
+    .document-list{display:grid;gap:10px}.document-row{display:flex;align-items:center;justify-content:space-between;gap:16px;background:var(--bg-soft);border:1px solid var(--line);border-radius:8px;padding:16px}
+    .document-name{font-size:13px;overflow-wrap:anywhere;min-width:0}.document-name small{display:block;font:10px var(--mono);color:var(--muted);margin-bottom:4px;letter-spacing:.1em}
+    .document-links{display:flex;gap:12px;flex-shrink:0;font-size:12px;color:#a4c7e6}#document-search{padding-left:12px;max-width:380px}
+    .document-panel [hidden],[hidden]{display:none!important}button:disabled{opacity:.5;cursor:wait}
+    @media(max-width:660px){.nav{gap:12px}.nav a{font-size:11px}.nav a:last-child{display:none}.document-row{align-items:flex-start;flex-direction:column}.documents .section-header{align-items:flex-start;flex-wrap:wrap}}
+  </style>
+</head>
+<body>
+  <header class="shell topbar">
+    <a class="brand" href="#top" aria-label="Ana sayfaya git"><span class="brand-mark">of<span>.</span></span><span>Ömer Faruk Arslan</span></a>
+    <nav class="nav" aria-label="Ana menü"><a class="nav-archive" href="#projeler">Projeler</a><a href="#stack">Teknolojiler</a><a href="#dokumanlar">Dokümanlar</a><a href="#hakkimda">Hakkımda</a></nav>
+    <div class="top-status"><span class="status-dot"></span>PERSONAL LAB / PUBLIC</div>
+  </header>
+  <main id="top">
+    <div class="shell workspace">
+      <aside class="profile-sidebar" aria-label="Hakkımda ve çalışma alanları"><div id="hakkimda"><div class="eyebrow">ABOUT / CONTACT</div><h2>Hakkımda</h2><p>Gömülü yazılım ve güç elektroniği uygulamaları üzerine çalışan bir elektrik-elektronik mühendisi. Bu sayfa eğitim platformundan çok, geliştirilen sistemlere ait bağımsız bir teknik kayıt ve açık paylaşım alanı.</p><div class="stack-list"><span>Embedded Software</span><span>Power Electronics</span><span>Control Systems</span></div></div><div id="stack"><div class="eyebrow">TOOLS / PLATFORMS</div><h2>Çalışma alanları</h2><p>Mikrodenetleyici çevre birimleri, zamanlama ve kontrol algoritmalarından haberleşme katmanlarına uzanan teknik notlar.</p><div class="stack-list"><span class="platform-st">STM32</span><span class="platform-ti">TI C2000</span><span>C / C++</span><span>PWM</span><span>ADC / DMA</span><span>PLL</span><span>RTOS</span></div></div></aside>
+    <section class="project-area" id="projeler">
+      <div class="section-header"><div><h2>Proje kayıtları</h2><p>Platform, etiket veya zorluk seviyesine göre daralt.</p></div><span class="counter" id="results-count" aria-live="polite"></span></div>
+        <div class="filters" aria-label="Proje filtreleri">
+          <div class="filter-top"><h3>Filtreler</h3><button type="button" id="clear-filters" class="clear">Tümünü temizle ↗</button></div>
+          <div class="search-field"><label for="search" class="field-label">Proje ara</label>
+          <div class="search-wrap"><svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.6"/><path d="m16 16 5 5"/></svg><input class="search" id="search" type="search" placeholder="PLL, GPIO, PWM..." autocomplete="off" /></div></div>
+          <div class="filter-group"><label for="platform" class="field-label">Platform</label><select class="select" id="platform"><option value="">Tüm platformlar</option><option value="STM32F429">STM32F429</option><option value="TI C2000">TI C2000</option></select></div>
+          <div class="difficulty-field"><span class="field-label" id="level-label">Zorluk seviyesi</span>
+          <div class="level-buttons" role="group" aria-labelledby="level-label" aria-description="Birden çok seviye seçilebilir.">
+            <button type="button" class="level-option" data-level="Basit" aria-pressed="false"><span class="level-left"><span class="level-dot"></span>Basit</span><span class="level-count" id="count-easy"></span></button>
+            <button type="button" class="level-option" data-level="Orta" aria-pressed="false"><span class="level-left"><span class="level-dot"></span>Orta</span><span class="level-count" id="count-medium"></span></button>
+            <button type="button" class="level-option" data-level="Zor" aria-pressed="false"><span class="level-left"><span class="level-dot"></span>Zor</span><span class="level-count" id="count-hard"></span></button>
+          </div>
+          </div>
+          <details class="tags-field"><summary id="tag-label">Etiketler</summary><div class="tag-filter-list" role="group" aria-labelledby="tag-label" id="tag-filters"></div></details>
+        </div>
+      <div class="active-bar" id="active-filters" aria-live="polite"></div><div class="result-list" id="project-list"></div>
+    <section class="documents" id="dokumanlar" aria-labelledby="documents-title">
+      <div class="section-header"><div><h2 id="documents-title">Doküman kütüphanesi</h2><p>Datasheet, referans kılavuzları ve teknik PDF dosyaları.</p></div><button type="button" class="copy-btn" id="manage-documents" aria-expanded="false" aria-controls="document-management">Yönetici girişi</button></div>
+      <div id="document-management" class="document-panel" hidden>
+        <form id="document-login"><h3 id="login-title">Yönetici girişi</h3><label class="field-label" for="document-email">E-posta</label><input class="search" id="document-email" type="email" autocomplete="username" required><label class="field-label" for="document-password">Şifre</label><input class="search" id="document-password" type="password" autocomplete="current-password" minlength="8" maxlength="200" required><div class="document-actions"><button class="copy-btn" type="submit" id="document-login-submit">Giriş yap</button><button class="clear" type="button" id="document-recover">Şifremi unuttum</button></div></form>
+        <form id="document-upload" hidden><h3>PDF ekle</h3><label class="field-label" for="document-file">PDF dosyası · En fazla 3 MB</label><input id="document-file" type="file" accept="application/pdf,.pdf" required><div class="document-actions"><button class="copy-btn" type="submit">PDF yükle</button></div></form>
+        <button class="clear" type="button" id="document-logout" hidden>Çıkış yap</button>
+        <p id="document-auth-status" role="status" aria-live="polite"></p>
+      </div>
+      <label class="field-label" for="document-search">Doküman ara</label><input class="search" id="document-search" type="search" placeholder="Dosya adına göre ara…">
+      <p id="document-status" role="status" aria-live="polite">Dokümanlar yükleniyor…</p><div id="document-list" class="document-list"></div><button class="clear" id="document-retry" type="button" hidden>Tekrar dene ↗</button>
+    </section>
+    </section>
+    </div>
+
+  </main>
+  <footer class="shell footer"><span>© <span id="year"></span> Ömer Faruk Arslan · Engineering project archive</span><span>Build notes, not tutorials.</span></footer>
+  <div class="modal-backdrop" id="modal-backdrop" role="presentation"><div class="project-modal" role="dialog" aria-modal="true" aria-label="Proje ayrıntıları" id="project-modal"><div class="modal-head"><button type="button" class="modal-close" id="modal-close" aria-label="Kapat">×</button><div class="modal-topline" id="detail-id"></div><h2 id="detail-title"></h2><p id="detail-desc"></p><div class="modal-pills" id="detail-pills"></div></div><div class="tabs" role="tablist" aria-label="Proje bölümleri"><button class="tab" type="button" role="tab" data-tab="overview" aria-selected="true">Genel bakış</button><button class="tab" type="button" role="tab" data-tab="code" aria-selected="false">Proje dosyaları</button><button class="tab" type="button" role="tab" data-tab="notes" aria-selected="false">Çalışma notları</button></div><div class="tab-panel" id="detail-content" role="tabpanel"></div><div class="modal-footer"><span>ARCHIVE / OPEN NOTES</span><button class="share" type="button" id="copy-link">Proje bağlantısını kopyala ↗</button></div></div></div>
+  <script>
+    // Example project entries. Replace summaries and code with your own tested records.
+    // Multiple difficulty levels are supported by the 'levels' array.
+    const PROJECTS = [
+      {id:'gpio-led',number:'001',platform:'STM32F429',title:'GPIO ile LED kontrolü',summary:'Basit bir GPIO çıkışıyla LED durumunun kontrol edilmesi ve temel donanım doğrulaması.',levels:['Basit'],tags:['GPIO','HAL'],category:'Firmware',overview:['GPIO çıkış modunun yapılandırılması ve çıkış seviyesinin değiştirilmesi.','Basit saat, pin ve bağlantı doğrulaması için başlangıç kaydı.'],notes:['Port ve pin tanımı kullanılan karta göre değişmelidir.','Çıkış hızı ve pull-up yapılandırması bağlantı tipine göre gözden geçirilir.'],filename:'main.c',code:'/* STM32 HAL — örnek kesit; GPIO saat ve pin ayarı gerektirir */\nwhile (1) {\n    HAL_GPIO_TogglePin(GPIOG, GPIO_PIN_13);\n    HAL_Delay(500);\n}'},
+      {id:'exti-button',number:'002',platform:'STM32F429',title:'EXTI ile buton kesmesi',summary:'GPIO kesmesiyle buton olayının işlenmesi; debounce ve ISR davranışının gözlemlenmesi.',levels:['Basit'],tags:['GPIO','Interrupt'],category:'Peripheral',overview:['Harici kesme kaynağının tanımlanması ve olay yakalama.','Kesme işleyicisini kısa tutarak ana döngüde olayın değerlendirilmesi.'],notes:['Mekanik buton sıçraması için debounce gerekir.','Kesmede uzun süreli bloklayan işlemlerden kaçınılır.'],filename:'exti.c',code:'/* STM32 HAL — şema; pin yapılandırması ayrıca yapılır */\nvolatile uint8_t button_event = 0;\n\nvoid HAL_GPIO_EXTI_Callback(uint16_t pin) {\n    if (pin == GPIO_PIN_0) {\n        button_event = 1;\n    }\n}'},
+      {id:'adc-dma',number:'003',platform:'STM32F429',title:'ADC + DMA örnekleme',summary:'ADC verisinin döngüsel DMA aktarımıyla işlemciyi meşgul etmeden toplanması.',levels:['Orta'],tags:['ADC','DMA'],category:'Measurement',overview:['ADC kanal sıralaması, DMA circular mode ve tampon yönetimi.','Half/full transfer olaylarıyla blok işleme yaklaşımı.'],notes:['Örnekleme aralığı seçilen trigger kaynağına bağlıdır.','DMA tamponu yazılırken okuma tutarlılığı incelenmelidir.'],filename:'adc_dma.c',code:'/* STM32 HAL — yapılandırma sonrasında temsili başlatma */\n#define SAMPLE_COUNT 256\nuint16_t adc_buffer[SAMPLE_COUNT];\n\nvoid start_acquisition(void) {\n    HAL_ADC_Start_DMA(&hadc1,\n                      (uint32_t*)adc_buffer,\n                      SAMPLE_COUNT);\n}'},
+      {id:'timer-sampling',number:'004',platform:'STM32F429',title:'Timer ile deterministik örnekleme',summary:'Timer trigger kullanarak ölçüm ve işleme akışının sabit zaman aralıklarına oturtulması.',levels:['Orta'],tags:['Timer','ADC'],category:'Real-time',overview:['Timer TRGO sinyalinin ADC dönüşüm tetikleyicisi olarak kullanılması.','Jitter ve işlem süresi ölçümü için GPIO izleme noktası oluşturulması.'],notes:['ADC trigger hattı ve timer seçimi hedef MCU dokümanından doğrulanmalı.','Dönüşüm süresi örnekleme periyodunu aşmamalı.'],filename:'timing_notes.txt',code:'Timer -> TRGO -> ADC -> DMA buffer\n                    |\n                    +--> half/full transfer callback\n\nİşlem süresi < örnekleme periyodu olmalıdır.'},
+      {id:'epwm-deadband',number:'005',platform:'TI C2000',title:'ePWM complementary & dead-band',summary:'Tamamlayıcı PWM çiftleri, dead-band ve çıkış güvenliğinin yapılandırılması.',levels:['Orta'],tags:['PWM','ePWM'],category:'Digital Control',overview:['Time-base, compare ve action-qualifier konfigürasyonu.','Komplemanter çıkış üretimi ve geçişlere dead-band eklenmesi.'],notes:['Dead-band değerleri sürücü, anahtarlama elemanı ve topolojiye göre belirlenir.','Trip-zone koruması ayrıca değerlendirilmelidir.'],filename:'epwm_plan.txt',code:'Time-Base -> Counter/Period\nCompare A/B -> Duty Cycle\nAction Qualifier -> PWM A\nDead-Band Module -> Complementary PWM B\nTrip Zone -> Fault handling'},
+      {id:'pll-grid',number:'006',platform:'TI C2000',title:'Şebeke faz takibi (PLL)',summary:'Örneklenen AC işaret üzerinden faz açısı ve frekans kestirimi; ayrık zamanlı kontrol döngüsü.',levels:['Orta','Zor'],tags:['PLL','Control'],category:'Algorithm',overview:['Şebeke sinyalinin örneklenmesi ve faz hatasının oluşturulması.','PI döngüsü üzerinden frekans/açı güncellemesi.','Düşük gürültü, hızlı yanıt ve stabilite arasındaki denge.'],notes:['Faz sıçraması ve frekans değişimi senaryoları ayrı test edilmelidir.','Birimler ve örnekleme periyodu açıkça tanımlanmalıdır.'],filename:'pll_flow.txt',code:'sample -> phase detector -> loop filter / PI\n                                |\n                      frequency estimate\n                                |\n                         angle update\n                                |\n                         phase feedback'},
+      {id:'pll-pwm',number:'007',platform:'TI C2000',title:'PLL senkron PWM üretimi',summary:'PLL açısını PWM referansına bağlayan senkronize kontrol akışı; algoritma ve zamanlama birlikte inceleniyor.',levels:['Orta','Zor'],tags:['PLL','PWM','ePWM'],category:'Digital Control',overview:['Ölçümden PLL açısının hesaplanması ve referans üretimi.','PWM güncellemelerinin uygun sayaç olayında uygulanması.','Kontrol döngüsünün worst-case süresinin doğrulanması.'],notes:['Faz hesabı ve PWM register güncellemesi aynı zaman tabanına oturtulmalı.','Güvenlik için PWM enable, fault ve trip durumları ayrı ele alınmalı.'],filename:'control_flow.txt',code:'25 kHz TIMER TICK (örnek mimari)\n  |-- ADC sample / feedback\n  |-- PLL phase and frequency update\n  |-- Control reference calculation\n  `-- ePWM duty shadow-register update\n\nNot: Bu dosya kaynak kod değil, tasarım akışıdır.'},
+      {id:'harmonic',number:'008',platform:'STM32F429',title:'RMS ve harmonik analizi',summary:'Örneklenmiş işaret üzerinde RMS, temel bileşen ve üst harmoniklerin hesaplanması.',levels:['Zor'],tags:['ADC','DSP'],category:'Signal Processing',overview:['İşaret tamponlarından RMS ve harmonik bileşenlerin ayrıştırılması.','Pencere, örnek sayısı ve şebeke frekansı ilişkisinin analizi.'],notes:['Pencere uzunluğu frekans sapmasına karşı kontrol edilmelidir.','THD hesabında DC bileşen ve temel harmonik ayrımı önemlidir.'],filename:'dsp_plan.txt',code:'Acquire N samples\nCompute DC offset / RMS\nEstimate fundamental frequency\nDFT / harmonic bins\nCompute THD and quality indicators'},
+      {id:'loop-25khz',number:'009',platform:'TI C2000',title:'25 kHz kontrol döngüsü',summary:'Timer kesmesi altında ADC–hesaplama–PWM iş akışının deterministik çalışmasının ölçülmesi.',levels:['Zor'],tags:['Timer','PWM','Real-time'],category:'Real-time',overview:['40 µs çevrim bütçesinde aşamaların zamanlaması.','Osiloskop ile GPIO işaretinden worst-case çevrim süresinin gözlemlenmesi.','Haberleşme yükünün kritik döngüye etkisinin ayrılması.'],notes:['Ortalama süre yerine maksimum ve sapma izlenmelidir.','Zaman kritik ISR içinde bloklayan haberleşme kodları çalıştırılmamalıdır.'],filename:'loop_plan.txt',code:'Timer ISR start -> DEBUG_GPIO_HIGH\n    ADC values / signal processing\n    Control logic / protections\n    ePWM update\nTimer ISR end   -> DEBUG_GPIO_LOW\n\nBudget: 1 / 25,000 Hz = 40 us'}
+    ];
+
+    const LEVEL_STYLES = {Basit:'easy',Orta:'medium',Zor:'hard'};
+    const state = {query:'', platform:'', levels:new Set(), tag:'',activeId:null,tab:'code',filePath:null};
+    const el = (id) => document.getElementById(id);
+    const escapeHtml = (value) => String(value).replace(/[&<>"']/g, ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+    const normalize = (value) => String(value).toLocaleLowerCase('tr-TR').normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+    const hasFilters = () => Boolean(state.query || state.platform || state.levels.size || state.tag);
+    const pill = level => `<span class="level-pill ${LEVEL_STYLES[level]}">${escapeHtml(level)}</span>`;
+    function projectMatches(project) {
+      if (state.platform && project.platform !== state.platform) return false;
+      if (state.tag && !project.tags.includes(state.tag)) return false;
+      if (state.levels.size && !project.levels.some(level => state.levels.has(level))) return false;
+      if (state.query) {
+        const haystack = normalize([project.title,project.summary,project.platform,project.category,...project.tags,...project.levels].join(' '));
+        if (!normalize(state.query).trim().split(/\s+/).every(word=>haystack.includes(word))) return false;
+      }
+      return true;
+    }
+    function renderTags() {
+      const tags = [...new Set(PROJECTS.flatMap(p=>p.tags))].sort((a,b)=>a.localeCompare(b,'tr'));
+      el('tag-filters').innerHTML = tags.map(tag=>`<button class="tag-filter" type="button" data-tag="${escapeHtml(tag)}" aria-pressed="${state.tag===tag}">${escapeHtml(tag)}</button>`).join('');
+    }
+    function renderActive() {
+      const tokens = [];
+      if (state.query) tokens.push(['query',`Arama: ${state.query}`]);
+      if (state.platform) tokens.push(['platform',state.platform]);
+      [...state.levels].forEach(level=>tokens.push([`level:${level}`,`Seviye: ${level}`]));
+      if(state.tag) tokens.push(['tag',`#${state.tag}`]);
+      el('active-filters').innerHTML = tokens.map(([key,label])=>`<button class="filter-token" data-remove="${escapeHtml(key)}" type="button">${escapeHtml(label)} <b aria-hidden="true">×</b></button>`).join('');
+      el('clear-filters').style.opacity=hasFilters()?'1':'.55';
+    }
+    function render() {
+      document.querySelector('.filters').dataset.platform=state.platform;
+      renderTags();
+      for (const level of ['Basit','Orta','Zor']) {
+        const btn=document.querySelector(`[data-level="${level}"]`);
+        btn.setAttribute('aria-pressed', String(state.levels.has(level)));
+      }
+      el('count-easy').textContent=String(PROJECTS.filter(p=>p.levels.includes('Basit')).length).padStart(2,'0');
+      el('count-medium').textContent=String(PROJECTS.filter(p=>p.levels.includes('Orta')).length).padStart(2,'0');
+      el('count-hard').textContent=String(PROJECTS.filter(p=>p.levels.includes('Zor')).length).padStart(2,'0');
+      const items = PROJECTS.filter(projectMatches);
+      el('results-count').textContent=`${String(items.length).padStart(2,'0')} / ${String(PROJECTS.length).padStart(2,'0')} kayıt`;
+      renderActive();
+      if (!items.length) {
+        el('project-list').innerHTML='<div class="empty-state"><h3>Eşleşen proje bulunamadı.</h3><p>Seçtiğin seviye, platform veya etiketleri değiştirmeyi dene.</p><button type="button" id="empty-clear">Filtreleri temizle</button></div>';
+        el('empty-clear').addEventListener('click',resetFilters);
+        return;
+      }
+      el('project-list').innerHTML=items.map(project=>`<article tabindex="0" role="button" aria-label="${escapeHtml(project.title)} projesini aç" data-project="${project.id}" data-platform="${escapeHtml(project.platform)}" class="project-card"><div class="card-top"><span class="card-type"><span class="type-icon" aria-hidden="true">${project.platform==='TI C2000'?'TI':'ST'}</span>${escapeHtml(project.platform)}</span><span>#${project.number}</span></div><h3 class="card-title">${escapeHtml(project.title)}</h3><p class="card-desc">${escapeHtml(project.summary)}</p><div class="card-footer">${project.levels.map(pill).join('')}${project.tags.slice(0,2).map(tag=>`<span class="mini-tag">${escapeHtml(tag)}</span>`).join('')}<span class="card-arrow">↗</span></div></article>`).join('');
+    }
+    function resetFilters() {
+      state.query=''; state.platform=''; state.tag=''; state.levels.clear();
+      el('search').value='';el('platform').value='';render();
+    }
+    function detailMarkup(project) {
+      if (state.tab==='overview') return `<h3>Proje özeti</h3><p>${escapeHtml(project.summary)}</p><h3>Kapsam</h3><ul>${project.overview.map(item=>`<li>${escapeHtml(item)}</li>`).join('')}</ul>`;
+      if (state.tab==='notes') return `<h3>Çalışma notları</h3><ul>${project.notes.map(item=>`<li>${escapeHtml(item)}</li>`).join('')}</ul><p class="source-note">Örnek kayıt: Bu notları proje sırasında alınan gerçek ölçümler ve kararlarla güncelleyebilirsin.</p>`;
+      return `<p class="file-notice">Örnek proje dosyaları · Mevcut kod kesiti ve notlardan oluşturuldu; tam, derlenebilir kaynak paketi değildir.</p><div class="file-explorer"><nav class="file-tree" aria-label="Proje dosyaları"><div class="tree-heading">${projectFiles(project).length} DOSYA</div>${fileTreeMarkup(projectFiles(project))}</nav><section class="file-viewer" aria-label="Dosya içeriği" id="file-viewer"></section></div>`;
+    }
+    function projectFiles(project) {
+      const sourcePath = `${project.filename.endsWith('.c')?'src':'design'}/${project.filename}`;
+      return [
+        {path:'README.md',content:`# ${project.title}\n\n${project.summary}\n\nPlatform: ${project.platform}\nSeviye: ${project.levels.join(', ')}\n\n## Kapsam\n${project.overview.map(item=>'- '+item).join('\n')}\n\n## Dosyalar\n- ${sourcePath}\n- docs/NOTES.md\n- docs/HARDWARE.md\n\nBu örnek arşiv mevcut kod kesiti ve notlardan oluşturulmuştur. Tam, derlenebilir proje değildir.\n`},
+        {path:sourcePath,content:project.code},
+        {path:'docs/NOTES.md',content:`# Çalışma notları\n\n${project.notes.map(item=>'- '+item).join('\n')}\n`},
+        {path:'docs/HARDWARE.md',content:`# Donanım\n\nPlatform: ${project.platform}\n\nPin bağlantıları, kart sürümü ve çevre birimi ayarları gerçek donanıma göre doğrulanmalıdır. Bu örnek kayıtta tam donanım konfigürasyonu bulunmamaktadır.\n`}
+      ];
+    }
+    function fileTreeMarkup(files) {
+      const root={children:new Map()};
+      for(const file of files){
+        let node=root;
+        const parts=file.path.split('/');
+        parts.forEach((name,index)=>{
+          if(!node.children.has(name))node.children.set(name,{name,children:new Map()});
+          node=node.children.get(name);
+          if(index===parts.length-1)node.file=file;
+        });
+      }
+      function branch(node){
+        return `<ul>${[...node.children.values()].map(child=>child.file
+          ?`<li><button class="file-entry" type="button" data-file="${escapeHtml(child.file.path)}" aria-current="${child.file.path===state.filePath?'true':'false'}"><span aria-hidden="true">▤</span>${escapeHtml(child.name)}</button></li>`
+          :`<li><details class="tree-folder" open><summary>${escapeHtml(child.name)}</summary>${branch(child)}</details></li>`).join('')}</ul>`;
+      }
+      return branch(root);
+    }
+    function renderFile(project) {
+      const files=projectFiles(project);
+      const file=files.find(item=>item.path===state.filePath)||files[1];
+      state.filePath=file.path;
+      el('file-viewer').innerHTML=`<div class="file-toolbar"><span class="file-path">${escapeHtml(file.path)}</span><div class="file-actions"><button type="button" class="copy-btn" id="copy-code">Kopyala</button><button type="button" class="copy-btn" id="download-file">İndir ↓</button></div></div><pre tabindex="0" aria-label="${escapeHtml(file.path)} içeriği"><code>${escapeHtml(file.content)}</code></pre><span class="file-meta">${file.content.split('\n').length} satır · UTF-8</span>`;
+      el('detail-content').querySelectorAll('[data-file]').forEach(button=>button.setAttribute('aria-current',String(button.dataset.file===file.path)));
+      el('copy-code').addEventListener('click',async()=>{
+        const button=el('copy-code');
+        try{await navigator.clipboard.writeText(file.content);button.textContent='Kopyalandı ✓'}
+        catch{button.textContent='Kopyalanamadı'}
+      });
+      el('download-file').addEventListener('click',()=>{
+        const url=URL.createObjectURL(new Blob([file.content],{type:'text/plain;charset=utf-8'}));
+        const link=document.createElement('a');link.href=url;link.download=file.path.split('/').pop();
+        document.body.appendChild(link);link.click();link.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);
+      });
+    }
+    function renderDetail() {
+      const project=PROJECTS.find(p=>p.id===state.activeId);if(!project)return;
+      el('project-modal').dataset.platform=project.platform;
+      el('detail-id').textContent=`PROJECT / ${project.number}  ·  ${project.platform}`;
+      el('detail-title').textContent=project.title;
+      el('detail-desc').textContent=project.summary;
+      el('detail-pills').innerHTML=project.levels.map(pill).join('')+project.tags.map(tag=>`<span class="mini-tag">${escapeHtml(tag)}</span>`).join('');
+      document.querySelectorAll('[data-tab]').forEach(b=>b.setAttribute('aria-selected',String(b.dataset.tab===state.tab)));
+      el('detail-content').innerHTML=detailMarkup(project);
+      if(state.tab==='code')renderFile(project);
+    }
+    el('detail-content').addEventListener('click',event=>{
+      const button=event.target.closest('[data-file]');if(!button)return;
+      const project=PROJECTS.find(p=>p.id===state.activeId);if(!project)return;
+      state.filePath=button.dataset.file;renderFile(project);
+    });
+
+    let previousFocus=null;
+    function openProject(id,updateHash=true) {
+      if(!PROJECTS.some(p=>p.id===id))return;
+      if(!state.activeId)previousFocus=document.activeElement;
+      state.activeId=id;state.tab='code';state.filePath=null;renderDetail();
+      el('modal-backdrop').classList.add('open');document.body.classList.add('modal-open');
+      el('modal-close').focus();if(updateHash)history.replaceState(null,'',`#project/${id}`);
+    }
+    function closeProject(updateHash=true) {
+      state.activeId=null;el('modal-backdrop').classList.remove('open');document.body.classList.remove('modal-open');
+      if(updateHash && location.hash.startsWith('#project/'))history.replaceState(null,'','#projeler');
+      if(previousFocus&&previousFocus.isConnected)previousFocus.focus();previousFocus=null;
+    }
+    el('search').addEventListener('input',e=>{state.query=e.target.value;render()});
+    el('platform').addEventListener('change',e=>{state.platform=e.target.value;render()});
+    document.querySelectorAll('.level-option').forEach(btn=>btn.addEventListener('click',()=>{
+      const level=btn.dataset.level;
+      if(state.levels.has(level))state.levels.delete(level);else state.levels.add(level);
+      render();
+    }));
+    el('tag-filters').addEventListener('click',e=>{
+      const btn=e.target.closest('[data-tag]');if(!btn)return;
+      state.tag=state.tag===btn.dataset.tag?'':btn.dataset.tag;render();
+    });
+    el('clear-filters').addEventListener('click',resetFilters);
+    el('active-filters').addEventListener('click',e=>{
+      const b=e.target.closest('[data-remove]');if(!b)return;
+      const key=b.dataset.remove;
+      if(key==='query'){state.query='';el('search').value=''}
+      if(key==='platform'){state.platform='';el('platform').value=''}
+      if(key==='tag')state.tag='';
+      if(key.startsWith('level:'))state.levels.delete(key.slice(6));
+      render();
+    });
+    el('project-list').addEventListener('click',e=>{const card=e.target.closest('[data-project]');if(card)openProject(card.dataset.project)});
+    el('project-list').addEventListener('keydown',e=>{const card=e.target.closest('[data-project]');if(card&&(e.key==='Enter'||e.key===' ')){e.preventDefault();openProject(card.dataset.project)}});
+    document.querySelectorAll('[data-tab]').forEach(btn=>btn.addEventListener('click',()=>{state.tab=btn.dataset.tab;renderDetail()}));
+    el('modal-close').addEventListener('click',()=>closeProject());
+    el('modal-backdrop').addEventListener('click',e=>{if(e.target===el('modal-backdrop'))closeProject()});
+    window.addEventListener('keydown',e=>{if(e.key==='Escape'&&state.activeId)closeProject()});
+    window.addEventListener('hashchange',()=>{const id=location.hash.match(/^#project\/(.+)$/)?.[1];if(id)openProject(id,false);else if(state.activeId)closeProject(false)});
+    el('copy-link').addEventListener('click',async()=>{
+      const link=location.href;
+      try{await navigator.clipboard.writeText(link);el('copy-link').textContent='Bağlantı kopyalandı ✓'}catch{el('copy-link').textContent='Kopyalanamadı'}
+      setTimeout(()=>{el('copy-link').textContent='Proje bağlantısını kopyala ↗'},1500);
+    });
+    el('year').textContent=new Date().getFullYear();
+    render();
+    const directProject=location.hash.match(/^#project\/(.+)$/)?.[1];if(directProject)openProject(directProject,false);
+  </script>
+  <script src="/assets/documents.js" defer></script>
+</body>
+</html>

@@ -1,0 +1,22 @@
+{
+  "name": "engineering-project-archive",
+  "version": "1.0.0",
+  "description": "Personal engineering archive with a PDF document library",
+  "scripts": {
+    "test": "node --test tests/*.test.cjs",
+    "typecheck": "tsc --noEmit --module nodenext --moduleResolution nodenext --target es2022 --lib es2022,dom --skipLibCheck netlify/functions/*.mts",
+    "check": "npm run test && npm run typecheck"
+  },
+  "license": "UNLICENSED",
+  "type": "commonjs",
+  "dependencies": {
+    "@netlify/blobs": "^11.1.6",
+    "@netlify/functions": "^6.0.3",
+    "@netlify/identity": "^2.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.5",
+    "typescript": "^7.0.2"
+  },
+  "private": true
+}
