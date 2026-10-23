@@ -51,3 +51,12 @@ test('project publisher offers a secure management interface and Netlify backend
   assert.ok(api.includes("user.roles?.includes('admin')"));
   assert.ok(api.includes("getStore({ name: 'portfolio-projects'"));
 });
+
+test('static demonstration projects are removed while dynamic project publishing remains enabled', () => {
+  assert.match(html, /const PROJECTS = \[\];/);
+  assert.doesNotMatch(html, /\{id:'gpio-led'/);
+  assert.match(html, /Henüz proje yayımlanmadı/);
+  const publisher = fs.readFileSync(path.join(publish, 'assets', 'projects.js'), 'utf8');
+  assert.match(publisher, /async function loadProjects\(/);
+  assert.match(publisher, /PROJECTS\.unshift\(\.\.\.verified\)/);
+});

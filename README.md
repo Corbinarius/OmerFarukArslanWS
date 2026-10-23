@@ -2,7 +2,7 @@
 
 STM32F429 ve TI C2000 çalışmaları için kişisel mühendislik portfolyosu. Sitede arama, platform/etiket/zorluk filtreleri, proje kayıtları ve PDF doküman kütüphanesi bulunur.
 
-> **Önemli:** Bu depodaki dokuz proje kaydı, örnek açıklamalar ve *kod kesitleri* içeriyor. Bunlar orijinal STM32CubeIDE / CCS proje klasörleri **değildir** ve derlenebilir tam projeler olarak sunulmamalıdır. Gerçek projeleri yayımlamak için lisans ve gizlilik kontrolünden geçirilmiş kaynak dosyalarını ayrı klasörlere ekleyin.
+**Başlangıçtaki dokuz örnek proje kaldırıldı.** Proje arşivi varsayılan olarak boş başlar; sitedeki yönetici panelinden yayımlanan gerçek projeler Netlify Blobs üzerinden listelenir. Yüklenmiş projeler ve PDF'ler bu değişiklikten etkilenmez.
 
 ## Mimari ve barındırma
 
@@ -70,12 +70,13 @@ python -m http.server 8000 --directory public
 
 Ardından `http://localhost:8000` adresini açın. Bu statik önizlemede Dokümanlar API'si ve kullanıcı girişi çalışmaz; çalışması için Netlify Functions gerekir.
 
-## Örnek projelerin durumu
+## Proje kayıtları
 
-- Kaynak örneklerini temsil eden önceki dokuz proje `public/index.html` içinde kalıyor; bu kayıtların kısa kod kesitlerini derlenebilir proje diye değerlendirmeyin.
-- Yeni, gerçek projeleri **web sitesindeki Proje kayıtları → Yönetici girişi → + Proje ekle** yolundan yayımlayın. Ayrıntılar aşağıdaki **Yeni özellik: Sitenin içinden proje yayımlama** bölümünde bulunuyor.
-- Eski örnek projeleri düzenlemek için isterseniz kodda `PROJECTS` dizisini değiştirin. Yeni yayımlanan projeler Blobs üzerinden geldiğinden GitHub commit'i gerektirmez.
-- Firma izinleri, üçüncü taraf lisanslar, anahtarlar ve kurum içi bilgiler için yayımlamadan önce kontrol yapın.
+- Başlangıçtaki 9 temsili kayıt kaldırılmıştır; `public/index.html` dosyasında `PROJECTS = []` durumundadır.
+- Yeni gerçek projeleri **Proje kayıtları → Yönetici girişi → + Proje ekle** yolundan yayımlayın.
+- Netlify Blobs deposundaki mevcut yayımlanmış projeler korunur. ZIP dosyaları ve PDF'ler silinmez.
+- Projeleri yönetici oturumunda ayrıntı ekranındaki **Projeyi sil** düğmesiyle silebilirsiniz.
+- Firma izinleri, üçüncü taraf lisanslar, gizli anahtarlar ve kurum içi bilgiler için yayımlamadan önce kontrol yapın.
 
 ## Güvenlik ve kontroller
 
