@@ -69,10 +69,9 @@
     submit.disabled = true;
     $('project-login-status').textContent = 'Giriş yapılıyor…';
     try {
-      const session = await api('/.netlify/functions/document-auth', {
-        method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action:'login',email:$('project-login-email').value,password:$('project-login-password').value })
-      });
+      if (!window.portfolioIdentity) throw new Error('Kimlik bileşeni yüklenemedi. Sayfayı yenileyin.');
+      await window.portfolioIdentity.login($('project-login-email').value, $('project-login-password').value);
+      const session = await api('/.netlify/functions/document-auth');
       $('project-login-password').value = '';
       updateSession(session);
       window.dispatchEvent(new Event('portfolio:refresh-auth'));

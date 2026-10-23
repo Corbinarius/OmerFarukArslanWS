@@ -21,7 +21,9 @@ test('HTML page and document script have valid JavaScript syntax', () => {
 test('frontend assets exist in configured publish directory', () => {
   assert.match(html, /<html lang="tr">/);
   for (const match of html.matchAll(/<script\s+src="(\/[^"]+)"/g)) {
-    assert.ok(fs.existsSync(path.join(publish, match[1].slice(1))), `Missing asset: ${match[1]}`);
+    if (match[1] === '/assets/identity-client.js') {
+      assert.ok(fs.existsSync(path.join(root, 'src/identity-client.mjs')), 'Missing Identity build entry');
+    } else assert.ok(fs.existsSync(path.join(publish, match[1].slice(1))), `Missing asset: ${match[1]}`);
   }
 });
 

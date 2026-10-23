@@ -3,7 +3,7 @@
 [build]
   publish = "public"
   functions = "netlify/functions"
-  command = "npm run check"
+  command = "npm run check && npm run build:identity"
 
 [functions]
   node_bundler = "esbuild"

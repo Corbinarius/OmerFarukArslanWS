@@ -3,7 +3,7 @@
   const endpoint = '/.netlify/functions/documents';
   const authEndpoint = '/.netlify/functions/document-auth';
   let files = [];
-  let callback = null;
+  let callback = null; // "invite" or "recovery"; token stays inside Identity SDK
   const escape = value => String(value).replace(/[&<>"']/g, char => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
   async function api(url, options = {}) {
     const response = await fetch(url, { credentials: 'same-origin', ...options });
@@ -51,24 +51,28 @@
     const button = $('document-login-submit'); button.disabled = true;
     $('document-auth-status').textContent = 'İşlem yapılıyor…';
     try {
-      const data = await auth({ action: callback?.type || 'login', email: $('document-email').value, password: $('document-password').value, ...(callback ? { token: callback.token } : {}) });
+      const identity = window.portfolioIdentity;
+      if (!identity) throw new Error('Kimlik doğrulama bileşeni yüklenemedi. Sayfayı yenileyin.');
+      if (callback) await identity.completePassword($('document-password').value);
+      else await identity.login($('document-email').value, $('document-password').value);
       callback = null; $('document-password').value = '';
       $('login-title').textContent = 'Yönetici girişi';
-      $('document-login-submit').textContent = 'Giriş yap';
-      $('document-auth-status').textContent = data.admin ? 'Giriş yapıldı. PDF ekleyebilirsiniz.' : 'Şifreniz kaydedildi.';
+      $('document-auth-status').textContent = 'İşlem tamamlandı. Oturum kontrol ediliyor…';
+      const data = await api(authEndpoint);
       session(data);
+      $('document-auth-status').textContent = data.admin ? 'Giriş başarılı. Yönetici işlemleri açık.' : 'Giriş başarılı ancak bu hesabın admin yetkisi görünmüyor.';
     } catch (error) { $('document-auth-status').textContent = error.message; }
     finally { button.disabled = false; }
   });
   $('document-recover').addEventListener('click', async () => {
     if (!$('document-email').reportValidity()) return;
     const button = $('document-recover'); button.disabled = true;
-    try { await auth({ action: 'recover', email: $('document-email').value }); $('document-auth-status').textContent = 'Hesap mevcutsa şifre yenileme bağlantısı gönderildi.'; }
+    try { await window.portfolioIdentity.requestRecovery($('document-email').value); $('document-auth-status').textContent = 'Hesap mevcutsa şifre yenileme bağlantısı gönderildi.'; }
     catch (error) { $('document-auth-status').textContent = error.message; }
     finally { button.disabled = false; }
   });
   $('document-logout').addEventListener('click', async () => {
-    try { await auth({ action: 'logout' }); session({}); $('document-auth-status').textContent = 'Çıkış yapıldı.'; }
+    try { await window.portfolioIdentity.logout(); session({}); $('document-auth-status').textContent = 'Çıkış yapıldı.'; }
     catch (error) { $('document-auth-status').textContent = error.message; }
   });
   $('document-upload').addEventListener('submit', async event => {
@@ -86,23 +90,41 @@
     finally { button.disabled = false; }
   });
   async function init() {
-    const hash = new URLSearchParams(location.hash.slice(1));
-    const invite = hash.get('invite_token'), recovery = hash.get('recovery_token');
-    if (invite || recovery) {
-      callback = { type: invite ? 'invite' : 'reset', token: invite || recovery };
-      history.replaceState(null, '', location.pathname + location.search + '#dokumanlar');
-      panel(true); $('document-login').hidden = false;
-      $('login-title').textContent = invite ? 'Davetinizi kabul edin' : 'Yeni şifre belirleyin';
-      $('document-email').hidden = true; $('document-email').required = false;
-      document.querySelector('label[for="document-email"]').hidden = true;
-      $('document-recover').hidden = true; $('document-login-submit').textContent = 'Şifreyi kaydet';
-      $('document-password').autocomplete = 'new-password';
-      $('dokumanlar').scrollIntoView();
-    } else {
-      try { session(await api(authEndpoint)); }
-      catch { $('document-auth-status').textContent = 'Giriş durumu alınamadı. Tekrar giriş yapabilirsiniz.'; }
+    const params = new URLSearchParams(location.hash.slice(1));
+    const expectsAuth = params.has('invite_token') || params.has('recovery_token');
+    const identity = window.portfolioIdentity;
+    if (!identity) {
+      $('document-auth-status').textContent = 'Kimlik doğrulama bileşeni yüklenemedi. Site yöneticisine bildirin.';
+      await load();
+      return;
+    }
+    try {
+      const result = await identity.callbackPromise;
+      if (result?.type === 'invite' || result?.type === 'recovery') {
+        callback = result.type;
+        panel(true);
+        $('document-login').hidden = false;
+        $('login-title').textContent = result.type === 'invite' ? 'Davetinizi kabul edin' : 'Yeni şifre belirleyin';
+        $('document-email').hidden = true;
+        $('document-email').required = false;
+        document.querySelector('label[for="document-email"]').hidden = true;
+        $('document-recover').hidden = true;
+        $('document-login-submit').textContent = 'Şifreyi kaydet';
+        $('document-password').autocomplete = 'new-password';
+        $('dokumanlar').scrollIntoView();
+      } else {
+        if (expectsAuth) throw new Error('Bağlantı doğrulanamadı. Yeni e-posta bağlantısı isteyin.');
+        session(await api(authEndpoint));
+      }
+    } catch (error) {
+      // Never leave sensitive tokens in visible URL after callback errors.
+      if (expectsAuth) history.replaceState(null, '', location.pathname + location.search + '#dokumanlar');
+      panel(Boolean(expectsAuth));
+      $('document-login').hidden = false;
+      $('document-auth-status').textContent = 'Kimlik bağlantısı doğrulanamadı: ' + error.message;
     }
     await load();
   }
+
   init();
 })();
