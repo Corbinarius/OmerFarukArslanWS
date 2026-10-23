@@ -8,7 +8,7 @@
   async function api(url, options = {}) {
     const response = await fetch(url, { credentials: 'same-origin', ...options });
     const data = await response.json();
-    if (!response.ok) throw new Error(data.error || 'İşlem tamamlanamadı.');
+    if (!response.ok) throw new Error((data.error || 'İşlem tamamlanamadı.') + (data.diagnostic ? ` [${data.diagnostic}]` : ''));
     return data;
   }
   const auth = body => api(authEndpoint, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
@@ -53,6 +53,8 @@
     try {
       const data = await auth({ action: callback?.type || 'login', email: $('document-email').value, password: $('document-password').value, ...(callback ? { token: callback.token } : {}) });
       callback = null; $('document-password').value = '';
+      $('login-title').textContent = 'Yönetici girişi';
+      $('document-login-submit').textContent = 'Giriş yap';
       $('document-auth-status').textContent = data.admin ? 'Giriş yapıldı. PDF ekleyebilirsiniz.' : 'Şifreniz kaydedildi.';
       session(data);
     } catch (error) { $('document-auth-status').textContent = error.message; }
