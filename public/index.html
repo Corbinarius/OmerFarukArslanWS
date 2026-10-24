@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="color-scheme" content="dark" />
+  <meta name="color-scheme" content="dark light" />
   <meta name="description" content="Ömer Faruk Arslan — embedded sistemler, STM32F429 ve TI C2000 çalışma arşivi." />
   <title>Ömer Faruk Arslan — Proje Arşivi</title>
   <style>
@@ -223,43 +223,37 @@
     .project-source-links a{display:inline-block;padding:10px 13px;border:1px solid #777;border-radius:6px;background:#2a2a2a;color:#eee;font-size:12px;text-decoration:none}
     .project-source-links a:hover{background:#363636}
     .project-admin-delete{border:1px solid #71504c;background:#302120;border-radius:6px;color:#eac3bc;padding:8px 11px;font-size:11px;margin-top:18px}
+    .source-upload{border:1px solid #373737;border-radius:8px;background:#202020;padding:16px}
+    .source-upload-title{font-size:13px;font-weight:600;margin-bottom:13px}
+    .source-upload-grid{display:grid;grid-template-columns:1fr 1fr;gap:15px}
+    .source-upload input[type="file"]{font:11px var(--sans)!important;min-width:0;max-width:100%;padding:10px}
+    .source-upload .form-note{margin-top:12px}
+    .source-selected{color:var(--text-mid);font:11px/1.75 var(--mono);margin-top:10px;max-height:138px;overflow:auto;white-space:pre-wrap;overflow-wrap:anywhere}
+    .file-viewer .source-loading{padding:24px;color:var(--muted);font:12px var(--mono)}
+    @media(max-width:660px){.source-upload-grid{grid-template-columns:1fr}}
     @media(max-width:660px){.project-manager{padding:17px}.project-manager form{grid-template-columns:1fr}.project-manager .wide{grid-column:auto}.project-header-actions{justify-content:space-between;width:100%}}
-  </style>
+  #tree-search{width:calc(100% - 24px);margin:0 12px 12px;padding:9px;background:#171717;color:#ddd;border:1px solid #444;border-radius:5px}
+    .code-line{display:flex;min-height:1.7em}.line-number{display:inline-block;min-width:4em;text-align:right;padding-right:1.5em;color:#777;user-select:none;flex-shrink:0}.file-viewer pre{padding-left:0}.file-tree{max-height:560px;overflow:auto}
+    
+    [hidden]{display:none!important}.topbar{gap:16px;flex-wrap:wrap;height:auto;min-height:77px;padding-block:16px}.header-controls{margin-left:auto;display:flex;align-items:center;gap:12px}.linkedin-link{font-size:13px;color:var(--text-mid)}.linkedin-link[aria-disabled=true]{opacity:.45;cursor:default}#online-count{font:11px var(--mono);color:var(--text-mid)}
+    #admin-dialog{width:min(960px,94vw);max-height:90vh;overflow:auto;padding:24px;border:1px solid var(--line);border-radius:12px;color:var(--text);background:var(--bg-soft)}#admin-dialog::backdrop{background:#000a;backdrop-filter:blur(5px)}#admin-dialog .project-manager{border:0;padding:0;margin:0}#profile-editor{margin-block:28px;padding-top:24px;border-top:1px solid var(--line)}#profile-form{display:grid;gap:14px}#profile-form label{display:grid;gap:6px;font-size:13px}#profile-form input,#profile-form textarea{width:100%;background:var(--surface);color:var(--text);border:1px solid var(--line);padding:12px;border-radius:6px;font:inherit}#admin-documents{margin-top:20px}#admin-logout{margin-top:20px}
+    :root[data-theme=light]{color-scheme:light;--bg:#f5f6f8;--bg-soft:#ffffff;--surface:#fff;--surface-2:#e9edf2;--surface-hover:#edf1f5;--line:#cbd2da;--line-soft:#dce1e7;--text:#202833;--text-mid:#455366;--muted:#5e6c7b;--accent:#243e58;--accent-2:#45617d;--accent-bg:#e5ecf3;--easy:#285c3b;--easy-bg:#e0f0e4;--easy-line:#a5cbb0;--medium:#775116;--medium-bg:#faf0d9;--medium-line:#d7bd83;--hard:#634581;--hard-bg:#eee5f7;--hard-line:#c4afd9}
+    html[data-theme=light] body::before{background:linear-gradient(130deg,#f4f7fa,#f8f6f2)}html[data-theme=light] :is(.filters,.project-card,.file-tree,.file-viewer,.project-source-panel,.source-upload,.search,.select,.project-manager,.document-management,.project-modal,.copy-btn,.project-add-btn,.file-toolbar,.modal-head,.tabs,.modal-footer,.tag,.mini-tag,.level-option,.brand-mark){background:var(--surface);color:var(--text);border-color:var(--line)}html[data-theme=light] :is(input,textarea,select,pre,#tree-search){background:var(--bg-soft)!important;color:var(--text)!important;border-color:var(--line)!important}html[data-theme=light] .file-entry[aria-current=true]{background:#e3ecf5;color:#21435e}html[data-theme=light] .project-card :is(h3,p,span),html[data-theme=light] .profile-sidebar :is(p,h2,span){color:var(--text-mid)}html[data-theme=light] .project-card h3{color:var(--text)}
+    @media(max-width:660px){.topbar{gap:12px}.header-controls{width:100%;justify-content:space-between;gap:7px}.header-controls button{font-size:11px}.linkedin-link{margin-left:auto}#admin-dialog{padding:16px}}
+    html[data-theme=light] :is(.empty-state,.stack-list span,.file-explorer,.tag-filter,.project-source-links a){background:var(--surface);color:var(--text-mid);border-color:var(--line)}html[data-theme=light] :is(.tab-panel h3,.tab-panel p,.tab-panel li,.modal-footer .share,.document-links,.tab){color:var(--text-mid)}html[data-theme=light] .tab[aria-selected=true]{color:var(--accent);border-color:var(--accent)}html[data-theme=light] :is(.file-entry:hover,.tree-folder summary:hover){background:var(--surface-hover);color:var(--text)}
+</style>
 </head>
 <body>
   <header class="shell topbar">
     <a class="brand" href="#top" aria-label="Ana sayfaya git"><span class="brand-mark">of<span>.</span></span><span>Ömer Faruk Arslan</span></a>
-    <nav class="nav" aria-label="Ana menü"><a class="nav-archive" href="#projeler">Projeler</a><a href="#stack">Teknolojiler</a><a href="#dokumanlar">Dokümanlar</a><a href="#hakkimda">Hakkımda</a></nav>
-    <div class="top-status"><span class="status-dot"></span>PERSONAL LAB / PUBLIC</div>
+    <a id="profile-linkedin" class="linkedin-link" aria-disabled="true" title="LinkedIn profil adresini yönetici panelinden ekleyin">in <span>LinkedIn</span></a>
+    <div class="header-controls"><span id="online-count" title="Son iki dakikadaki yaklaşık aktif tarayıcı sayısı" role="status">● Aktif: —</span><button id="theme-toggle" class="copy-btn" type="button" aria-pressed="false">Açık tema</button><button class="project-add-btn" type="button" id="open-project-manager" aria-expanded="false" aria-controls="admin-dialog">Yönetici paneli</button></div>
   </header>
   <main id="top">
     <div class="shell workspace">
       <aside class="profile-sidebar" aria-label="Hakkımda ve çalışma alanları"><div id="hakkimda"><div class="eyebrow">ABOUT / CONTACT</div><h2>Hakkımda</h2><p>Gömülü yazılım ve güç elektroniği uygulamaları üzerine çalışan bir elektrik-elektronik mühendisi. Bu sayfa eğitim platformundan çok, geliştirilen sistemlere ait bağımsız bir teknik kayıt ve açık paylaşım alanı.</p><div class="stack-list"><span>Embedded Software</span><span>Power Electronics</span><span>Control Systems</span></div></div><div id="stack"><div class="eyebrow">TOOLS / PLATFORMS</div><h2>Çalışma alanları</h2><p>Mikrodenetleyici çevre birimleri, zamanlama ve kontrol algoritmalarından haberleşme katmanlarına uzanan teknik notlar.</p><div class="stack-list"><span class="platform-st">STM32</span><span class="platform-ti">TI C2000</span><span>C / C++</span><span>PWM</span><span>ADC / DMA</span><span>PLL</span><span>RTOS</span></div></div></aside>
     <section class="project-area" id="projeler">
-      <div class="section-header"><div><h2>Proje kayıtları</h2><p>Platform, etiket veya zorluk seviyesine göre daralt.</p></div><div class="project-header-actions"><span class="counter" id="results-count" aria-live="polite"></span><button class="project-add-btn" type="button" id="open-project-manager" aria-expanded="false" aria-controls="project-manager">Yönetici girişi</button></div></div>
-      <div class="project-manager" id="project-manager" hidden>
-        <div class="project-manager-head"><div><h3>Yeni proje yayımla</h3><p>Proje bilgilerini gir, tam kaynak kod paketini ZIP olarak ekle veya GitHub kaynak bağlantısı ver.</p></div><button class="copy-btn" type="button" id="close-project-manager" aria-label="Kapat">×</button></div>
-        <form id="project-admin-login">
-          <div class="wide"><p class="form-note">Proje yayımlamak için yönetici hesabınla giriş yap. Ziyaretçiler yalnızca projeleri inceleyebilir.</p></div>
-          <div><label class="field-label" for="project-login-email">E-posta</label><input type="email" id="project-login-email" required autocomplete="username"></div>
-          <div><label class="field-label" for="project-login-password">Şifre</label><input type="password" id="project-login-password" required minlength="8" autocomplete="current-password"></div>
-          <div class="wide publish-actions"><button type="submit" id="project-login-button">Yönetici olarak giriş yap</button><p class="project-feedback" id="project-login-status" role="status" aria-live="polite"></p></div>
-        </form>
-        <form id="project-publish-form" hidden>
-          <div><label class="field-label" for="new-project-title">Proje başlığı *</label><input id="new-project-title" name="title" maxlength="110" required placeholder="Örn. C2000 PLL–PWM kontrolü"></div>
-          <div><label class="field-label" for="new-project-platform">Platform *</label><input id="new-project-platform" name="platform" maxlength="50" list="project-platforms" required placeholder="Örn. TI C2000"><datalist id="project-platforms"><option value="STM32F429"><option value="TI C2000"><option value="Zynq / FPGA"><option value="AM243x"><option value="STM32H745"></datalist></div>
-          <div><label class="field-label" for="new-project-category">Kategori</label><input id="new-project-category" name="category" maxlength="65" placeholder="Örn. Digital Control"></div>
-          <div><label class="field-label" for="new-project-color">Platform rengi</label><div class="color-row"><input type="color" id="new-project-color" name="color" value="#a4c7e6" aria-label="Platform rengi seç"><input id="new-project-color-hex" maxlength="7" value="#a4c7e6" aria-label="HEX renk kodu"></div></div>
-          <div class="wide"><label class="field-label" for="new-project-summary">Kısa açıklama *</label><textarea id="new-project-summary" name="summary" maxlength="650" rows="2" required placeholder="Projenin amacı ve neler yaptığı…"></textarea></div>
-          <div class="wide"><span class="field-label">Zorluk seviyeleri * (birden fazla seçilebilir)</span><div class="level-checks"><label><input type="checkbox" name="project-level" value="Basit">Basit</label><label><input type="checkbox" name="project-level" value="Orta">Orta</label><label><input type="checkbox" name="project-level" value="Zor">Zor</label></div></div>
-          <div class="wide"><label class="field-label" for="new-project-tags">Etiketler (virgülle ayır)</label><input id="new-project-tags" name="tags" maxlength="250" placeholder="PLL, PWM, ADC, Control"></div>
-          <div class="wide"><label class="field-label" for="new-project-overview">Kapsam / teknik açıklama (her satır ayrı madde)</label><textarea id="new-project-overview" name="overview" maxlength="4000" placeholder="Donanım, çalışma prensibi, kullanılan çevre birimleri…"></textarea></div>
-          <div class="wide"><label class="field-label" for="new-project-notes">Test ve kurulum notları (her satır ayrı madde)</label><textarea id="new-project-notes" name="notes" maxlength="4000" placeholder="Derleme, yükleme, ölçümler, sınırlamalar…"></textarea></div>
-          <div><label class="field-label" for="new-project-file">Tam kaynak proje ZIP (en fazla 3 MB)</label><input id="new-project-file" name="file" type="file" accept=".zip,application/zip"><div class="form-note">Büyük Vivado/CCS projeleri için ZIP yerine GitHub bağlantısını kullanabilirsin.</div></div>
-          <div><label class="field-label" for="new-project-repo">GitHub kaynak bağlantısı</label><input id="new-project-repo" name="repoUrl" type="url" placeholder="https://github.com/kullanici/proje"><div class="form-note">ZIP veya GitHub bağlantısından en az biri zorunludur.</div></div>
-          <div class="wide publish-actions"><button type="submit" id="project-publish-button">Projeyi yayımla ↗</button><p class="project-feedback" id="project-publish-status" role="status" aria-live="polite"></p></div>
-        </form>
-      </div>
+      <div class="section-header"><div><h2>Proje kayıtları</h2><p>Platform, etiket veya zorluk seviyesine göre daralt.</p></div><div class="project-header-actions"><span class="counter" id="results-count" aria-live="polite"></span></div></div>
         <div class="filters" aria-label="Proje filtreleri">
           <div class="filter-top"><h3>Filtreler</h3><button type="button" id="clear-filters" class="clear">Tümünü temizle ↗</button></div>
           <div class="search-field"><label for="search" class="field-label">Proje ara</label>
@@ -290,8 +284,40 @@
     </div>
 
   </main>
+<dialog id="admin-dialog" aria-labelledby="admin-title">      <div class="project-manager" id="project-manager" hidden>
+        <div class="project-manager-head"><div><h3 id="admin-title">Yönetici paneli</h3><p>Proje bilgilerini gir, kaynak dosyalarını veya klasörü seç; ziyaretçiler her dosyayı arşivde okuyabilsin.</p></div><button class="copy-btn" type="button" id="close-project-manager" aria-label="Kapat">×</button></div>
+        <form id="project-admin-login">
+          <div class="wide"><p class="form-note">Proje yayımlamak için yönetici hesabınla giriş yap. Ziyaretçiler yalnızca projeleri inceleyebilir.</p></div>
+          <div><label class="field-label" for="project-login-email">Kullanıcı adı veya e-posta</label><input type="text" id="project-login-email" required autocomplete="username"></div>
+          <div><label class="field-label" for="project-login-password">Şifre</label><input type="password" id="project-login-password" required minlength="8" autocomplete="current-password"></div>
+          <div class="wide publish-actions"><button type="submit" id="project-login-button">Yönetici olarak giriş yap</button><p class="project-feedback" id="project-login-status" role="status" aria-live="polite"></p></div>
+        </form>
+        <form id="project-publish-form" hidden>
+          <div><label class="field-label" for="new-project-title">Proje başlığı *</label><input id="new-project-title" name="title" maxlength="110" required placeholder="Örn. C2000 PLL–PWM kontrolü"></div>
+          <div><label class="field-label" for="new-project-platform">Platform *</label><input id="new-project-platform" name="platform" maxlength="50" list="project-platforms" required placeholder="Örn. TI C2000"><datalist id="project-platforms"><option value="STM32F429"><option value="TI C2000"><option value="Zynq / FPGA"><option value="AM243x"><option value="STM32H745"></datalist></div>
+          <div><label class="field-label" for="new-project-category">Kategori</label><input id="new-project-category" name="category" maxlength="65" placeholder="Örn. Digital Control"></div>
+          <div><label class="field-label" for="new-project-color">Platform rengi</label><div class="color-row"><input type="color" id="new-project-color" name="color" value="#a4c7e6" aria-label="Platform rengi seç"><input id="new-project-color-hex" maxlength="7" value="#a4c7e6" aria-label="HEX renk kodu"></div></div>
+          <div class="wide"><label class="field-label" for="new-project-summary">Kısa açıklama *</label><textarea id="new-project-summary" name="summary" maxlength="650" rows="2" required placeholder="Projenin amacı ve neler yaptığı…"></textarea></div>
+          <div class="wide"><span class="field-label">Zorluk seviyeleri * (birden fazla seçilebilir)</span><div class="level-checks"><label><input type="checkbox" name="project-level" value="Basit">Basit</label><label><input type="checkbox" name="project-level" value="Orta">Orta</label><label><input type="checkbox" name="project-level" value="Zor">Zor</label></div></div>
+          <div class="wide"><label class="field-label" for="new-project-tags">Etiketler (virgülle ayır)</label><input id="new-project-tags" name="tags" maxlength="250" placeholder="PLL, PWM, ADC, Control"></div>
+          <div class="wide"><label class="field-label" for="new-project-overview">Kapsam / teknik açıklama (her satır ayrı madde)</label><textarea id="new-project-overview" name="overview" maxlength="4000" placeholder="Donanım, çalışma prensibi, kullanılan çevre birimleri…"></textarea></div>
+          <div class="wide"><label class="field-label" for="new-project-notes">Test ve kurulum notları (her satır ayrı madde)</label><textarea id="new-project-notes" name="notes" maxlength="4000" placeholder="Derleme, yükleme, ölçümler, sınırlamalar…"></textarea></div>
+          <div class="wide source-upload"><div class="source-upload-title">Kaynak kodları (ZIP gerekmez)</div><div class="source-upload-grid"><div><label class="field-label" for="new-project-sources">Tek tek veya çoklu dosya seç</label><input id="new-project-sources" type="file" multiple accept=".c,.h,.cpp,.hpp,.cc,.hh,.vhd,.vhdl,.v,.sv,.svh,.tcl,.s,.asm,.ld,.ioc,.ini,.txt,.md,.json,.yaml,.yml,.xml,.py,.sh,.cmake,.cfg,.sdc,.xdc,.launch,.project,.cproject,.map,.hex,.csv"></div><div><label class="field-label" for="new-project-folder">Bilgisayarımdan proje klasörü seç</label><input id="new-project-folder" type="file" webkitdirectory directory multiple></div></div><div class="form-note">Klasörü seçtiğinde alt klasör yapısı korunur. Yayımlanan dosyalar ziyaretçilere site içinde açılır. Toplam 100 MB, en fazla 10000 UTF-8 kaynak dosyası. Dosyalar 512 KB parçalarla yüklenir; ilerleme aşağıda gösterilir. Parola, özel anahtar ve şirket içi kaynak yükleme.</div><div class="source-selected" id="source-selection" aria-live="polite">Henüz dosya seçilmedi.</div></div>
+          <div><label class="field-label" for="new-project-repo">GitHub kaynak bağlantısı</label><input id="new-project-repo" name="repoUrl" type="url" placeholder="https://github.com/kullanici/proje"><div class="form-note">Kaynak dosyası veya GitHub bağlantısından en az biri zorunludur. Herkese açık GitHub deposunun kök adresini gir. Kaynak dosyaları bu sayfada açılır.</div></div>
+          <div class="wide publish-actions"><button type="submit" id="project-publish-button">Projeyi yayımla ↗</button><p class="project-feedback" id="project-publish-status" role="status" aria-live="polite"></p></div>
+        </form>
+      </div>
+<section id="profile-editor" hidden><h3>Ana sayfa içeriği</h3><form id="profile-form">
+<label>Hakkımda<textarea name="about" maxlength="2500" rows="5"></textarea></label>
+<label>Hakkımda etiketleri (virgülle ayır)<input name="aboutTags" maxlength="500"></label>
+<label>Çalışma alanları<textarea name="work" maxlength="2500" rows="4"></textarea></label>
+<label>Çalışma alanı etiketleri (virgülle ayır)<input name="workTags" maxlength="500"></label>
+<label>LinkedIn profil adresi<input name="linkedin" type="url" maxlength="350" placeholder="https://www.linkedin.com/in/profilin/"></label>
+<button class="copy-btn" type="submit">İçeriği kaydet</button><p id="profile-status" role="status"></p></form></section>
+<button id="admin-logout" class="copy-btn" type="button" hidden>Oturumu kapat</button><div id="admin-documents"></div></dialog>
   <footer class="shell footer"><span>© <span id="year"></span> Ömer Faruk Arslan · Engineering project archive</span><span>Build notes, not tutorials.</span></footer>
   <div class="modal-backdrop" id="modal-backdrop" role="presentation"><div class="project-modal" role="dialog" aria-modal="true" aria-label="Proje ayrıntıları" id="project-modal"><div class="modal-head"><button type="button" class="modal-close" id="modal-close" aria-label="Kapat">×</button><div class="modal-topline" id="detail-id"></div><h2 id="detail-title"></h2><p id="detail-desc"></p><div class="modal-pills" id="detail-pills"></div></div><div class="tabs" role="tablist" aria-label="Proje bölümleri"><button class="tab" type="button" role="tab" data-tab="overview" aria-selected="true">Genel bakış</button><button class="tab" type="button" role="tab" data-tab="code" aria-selected="false">Proje dosyaları</button><button class="tab" type="button" role="tab" data-tab="notes" aria-selected="false">Çalışma notları</button></div><div class="tab-panel" id="detail-content" role="tabpanel"></div><div class="modal-footer"><span>ARCHIVE / OPEN NOTES</span><button type="button" class="project-admin-delete" id="delete-current-project" hidden>Projeyi sil</button><button class="share" type="button" id="copy-link">Proje bağlantısını kopyala ↗</button></div></div></div>
+  <script src="/assets/source-browser.js"></script>
   <script>
     // Static demo projects removed. Published projects are loaded from Netlify Blobs
     // by public/assets/projects.js; do not place example records here.
@@ -356,23 +382,17 @@
       el('search').value='';el('platform').value='';render();
     }
     function detailMarkup(project) {
-      if (state.tab==='code' && (project.archive || project.repoUrl)) {
-        const downloadUrl = `/.netlify/functions/projects?download=${encodeURIComponent(project.id)}`;
-        const repo = typeof project.repoUrl==='string' && /^https:\/\/github\.com\//.test(project.repoUrl) ? project.repoUrl : '';
-        return `<div class="project-source-panel"><h3>Projenin tam kaynakları</h3><p>Bu proje kısa bir kod örneği değil, indirilip incelenebilen kaynak paketidir.</p><div class="project-source-links">${project.archive?`<a href="${downloadUrl}" download>Kaynak projeyi indir (.ZIP) ↓</a>`:''}${repo?`<a href="${escapeHtml(repo)}" target="_blank" rel="noopener noreferrer">GitHub kaynak deposu ↗</a>`:''}</div><p>${escapeHtml(project.filename || 'Kaynak dosyaları proje deposunda bulunur.')}</p><p class="source-note">ZIP dosyası yerel geliştirme ortamında açılarak incelenebilir. Her projeyi yalnızca paylaşma iznin olan kaynaklarla yayımla.</p></div>`;
-      }
       if (state.tab==='overview') return `<h3>Proje özeti</h3><p>${escapeHtml(project.summary)}</p><h3>Kapsam</h3><ul>${project.overview.map(item=>`<li>${escapeHtml(item)}</li>`).join('')}</ul>`;
-      if (state.tab==='notes') return `<h3>Çalışma notları</h3><ul>${project.notes.map(item=>`<li>${escapeHtml(item)}</li>`).join('')}</ul>${project.archive || project.repoUrl ? '' : '<p class="source-note">Örnek kayıt; gerçek test notlarıyla güncellenmelidir.</p>'}`;
-      return `<p class="file-notice">Örnek proje dosyaları · Mevcut kod kesiti ve notlardan oluşturuldu; tam, derlenebilir kaynak paketi değildir.</p><div class="file-explorer"><nav class="file-tree" aria-label="Proje dosyaları"><div class="tree-heading">${projectFiles(project).length} DOSYA</div>${fileTreeMarkup(projectFiles(project))}</nav><section class="file-viewer" aria-label="Dosya içeriği" id="file-viewer"></section></div>`;
-    }
-    function projectFiles(project) {
-      const sourcePath = `${project.filename.endsWith('.c')?'src':'design'}/${project.filename}`;
-      return [
-        {path:'README.md',content:`# ${project.title}\n\n${project.summary}\n\nPlatform: ${project.platform}\nSeviye: ${project.levels.join(', ')}\n\n## Kapsam\n${project.overview.map(item=>'- '+item).join('\n')}\n\n## Dosyalar\n- ${sourcePath}\n- docs/NOTES.md\n- docs/HARDWARE.md\n\nBu örnek arşiv mevcut kod kesiti ve notlardan oluşturulmuştur. Tam, derlenebilir proje değildir.\n`},
-        {path:sourcePath,content:project.code},
-        {path:'docs/NOTES.md',content:`# Çalışma notları\n\n${project.notes.map(item=>'- '+item).join('\n')}\n`},
-        {path:'docs/HARDWARE.md',content:`# Donanım\n\nPlatform: ${project.platform}\n\nPin bağlantıları, kart sürümü ve çevre birimi ayarları gerçek donanıma göre doğrulanmalıdır. Bu örnek kayıtta tam donanım konfigürasyonu bulunmamaktadır.\n`}
-      ];
+      if (state.tab==='notes') return `<h3>Çalışma notları</h3><ul>${project.notes.map(item=>`<li>${escapeHtml(item)}</li>`).join('')}</ul>`;
+      const repo = typeof project.repoUrl==='string' && /^https:\/\/github\.com\//.test(project.repoUrl) ? project.repoUrl : '';
+      const repoLink = repo ? `<a href="${escapeHtml(repo)}" target="_blank" rel="noopener noreferrer">GitHub kaynak deposu ↗</a>` : '';
+      if (Array.isArray(project.sourceFiles) && project.sourceFiles.length) {
+        return `<div class="project-source-links">${repoLink}</div><p class="file-notice">Kaynak dosyaları · Bir dosya seçerek okuyabilir, kopyalayabilir veya indirebilirsin. Büyük dosyalarda ilk 256 KB önizlenir.</p><div class="file-explorer"><nav class="file-tree" aria-label="Proje dosyaları"><div class="tree-heading">${project.sourceFiles.length} KAYNAK DOSYASI</div><input type="search" id="tree-search" placeholder="Dosya ara…" aria-label="Dosya ağacında ara"><div id="tree-results">${fileTreeMarkup(project.sourceFiles)}</div></nav><section class="file-viewer" aria-label="Dosya içeriği" id="file-viewer"></section></div>`;
+      }
+      if (project.chunked || project.archive || repo) {
+        return `<div class="project-source-panel" id="source-adapter-status" role="status">Proje dosyaları yükleniyor…</div>`;
+      }
+      return `<p class="file-notice">Bu projeye henüz kaynak dosyası eklenmemiş.</p>`;
     }
     function fileTreeMarkup(files) {
       const root={children:new Map()};
@@ -386,27 +406,47 @@
         });
       }
       function branch(node){
-        return `<ul>${[...node.children.values()].map(child=>child.file
+        return `<ul>${[...node.children.values()].sort((a,b)=>Number(Boolean(a.file))-Number(Boolean(b.file))||a.name.localeCompare(b.name)).map(child=>child.file
           ?`<li><button class="file-entry" type="button" data-file="${escapeHtml(child.file.path)}" aria-current="${child.file.path===state.filePath?'true':'false'}"><span aria-hidden="true">▤</span>${escapeHtml(child.name)}</button></li>`
           :`<li><details class="tree-folder" open><summary>${escapeHtml(child.name)}</summary>${branch(child)}</details></li>`).join('')}</ul>`;
       }
       return branch(root);
     }
-    function renderFile(project) {
-      const files=projectFiles(project);
-      const file=files.find(item=>item.path===state.filePath)||files[1];
+    async function renderFile(project) {
+      const files=project.sourceFiles || [];
+      const index=files.findIndex(item=>item.path===state.filePath);
+      const position=index>=0?index:0;
+      const file=files[position];
+      const viewer=el('file-viewer');
+      if(!file || !viewer) return;
       state.filePath=file.path;
-      el('file-viewer').innerHTML=`<div class="file-toolbar"><span class="file-path">${escapeHtml(file.path)}</span><div class="file-actions"><button type="button" class="copy-btn" id="copy-code">Kopyala</button><button type="button" class="copy-btn" id="download-file">İndir ↓</button></div></div><pre tabindex="0" aria-label="${escapeHtml(file.path)} içeriği"><code>${escapeHtml(file.content)}</code></pre><span class="file-meta">${file.content.split('\n').length} satır · UTF-8</span>`;
       el('detail-content').querySelectorAll('[data-file]').forEach(button=>button.setAttribute('aria-current',String(button.dataset.file===file.path)));
-      el('copy-code').addEventListener('click',async()=>{
-        const button=el('copy-code');
-        try{await navigator.clipboard.writeText(file.content);button.textContent='Kopyalandı ✓'}
+      viewer.innerHTML=`<div class="source-loading">${escapeHtml(file.path)} yükleniyor…</div>`;
+      let content;
+      try {
+        content=await window.SourceBrowser.content(project,file,position);
+      } catch (error) {
+        if(state.activeId===project.id && state.filePath===file.path && viewer.isConnected)
+          viewer.innerHTML=`<div class="source-loading">${escapeHtml(error.message)} <button type="button" class="copy-btn" id="retry-source">Tekrar dene</button></div>`;
+        const retry=viewer.querySelector('#retry-source');if(retry)retry.addEventListener('click',()=>renderFile(project));
+        return;
+      }
+      if(state.activeId!==project.id || state.filePath!==file.path || !viewer.isConnected) return;
+      viewer.innerHTML=`<div class="file-toolbar"><span class="file-path">${escapeHtml(file.path)}</span><div class="file-actions"><button type="button" class="copy-btn" id="copy-code">${project.chunked && file.size>256*1024 ? "Önizlemeyi kopyala" : "Kopyala"}</button><button type="button" class="copy-btn" id="download-file">İndir ↓</button></div></div><pre tabindex="0" aria-label="${escapeHtml(file.path)} içeriği"><code>${content.split("\n").map((line,i)=>`<span class="code-line"><span class="line-number" aria-hidden="true">${i+1}</span><span>${escapeHtml(line)||" "}</span></span>`).join("")}</code></pre><span class="file-meta">${content.split('\n').length} satır · UTF-8 · ${file.size} bayt${project.chunked && file.size>256*1024 ? " · İlk 256 KB gösteriliyor; İndir tam dosyayı alır." : ""}</span>`;
+      viewer.querySelector('#copy-code').addEventListener('click',async()=>{
+        const button=viewer.querySelector('#copy-code');
+        try{await navigator.clipboard.writeText(content);button.textContent='Kopyalandı ✓'}
         catch{button.textContent='Kopyalanamadı'}
       });
-      el('download-file').addEventListener('click',()=>{
-        const url=URL.createObjectURL(new Blob([file.content],{type:'text/plain;charset=utf-8'}));
+      viewer.querySelector('#download-file').addEventListener('click',async()=>{
+        const button=viewer.querySelector('#download-file');button.disabled=true;button.textContent='Hazırlanıyor…';
+        try {
+        const url=URL.createObjectURL(await window.SourceBrowser.download(project,file,position));
         const link=document.createElement('a');link.href=url;link.download=file.path.split('/').pop();
         document.body.appendChild(link);link.click();link.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);
+        button.textContent='İndir ↓';
+        }catch(error){button.textContent='Tekrar indir';window.alert(error.message);}
+        finally{button.disabled=false;}
       });
     }
     function platformStyle(project) {
@@ -417,14 +457,31 @@
       const project=PROJECTS.find(p=>p.id===state.activeId);if(!project)return;
       el('project-modal').dataset.platform=project.platform;
       el('project-modal').setAttribute('style',platformStyle(project));
-      el('delete-current-project').hidden = !(window.portfolioAdmin && (project.archive || project.repoUrl));
+      el('delete-current-project').hidden = !(window.portfolioAdmin && (project.chunked || project.sourceFiles?.length || project.archive || project.repoUrl));
       el('detail-id').textContent=`PROJECT / ${project.number}  ·  ${project.platform}`;
       el('detail-title').textContent=project.title;
       el('detail-desc').textContent=project.summary;
       el('detail-pills').innerHTML=project.levels.map(pill).join('')+project.tags.map(tag=>`<span class="mini-tag">${escapeHtml(tag)}</span>`).join('');
       document.querySelectorAll('[data-tab]').forEach(b=>b.setAttribute('aria-selected',String(b.dataset.tab===state.tab)));
       el('detail-content').innerHTML=detailMarkup(project);
-      if(state.tab==='code' && !project.archive && !project.repoUrl)renderFile(project);
+      if(state.tab==='code' && project.sourceFiles?.length) {
+        void renderFile(project);
+        el('tree-search').addEventListener('input',e=>{
+          const files=project.sourceFiles.filter(f=>f.path.toLowerCase().includes(e.target.value.toLowerCase()));
+          el('tree-results').innerHTML=files.length?fileTreeMarkup(files):'<p class="file-notice">Dosya bulunamadı.</p>';
+        });
+      } else if(state.tab==='code' && (project.chunked || project.archive || project.repoUrl)) {
+        const status=el('source-adapter-status');
+        window.SourceBrowser.load(project).then(()=>{
+          if(!status.isConnected || state.activeId!==project.id)return;
+          if(project.sourceFiles?.length)renderDetail();
+          else status.textContent='Görüntülenebilecek kaynak dosyası bulunamadı.';
+        }).catch(error=>{
+          if(!status.isConnected)return;
+          status.textContent=error.message+' ';
+          const retry=document.createElement('button');retry.className='copy-btn';retry.textContent='Tekrar dene';retry.onclick=()=>renderDetail();status.append(retry);
+        });
+      }
     }
     el('detail-content').addEventListener('click',event=>{
       const button=event.target.closest('[data-file]');if(!button)return;
@@ -483,7 +540,9 @@
     const directProject=location.hash.match(/^#project\/(.+)$/)?.[1];if(directProject)openProject(directProject,false);
   </script>
   <script src="/assets/identity-client.js" defer></script>
+  <script src="/assets/site-shell.js" defer></script>
   <script src="/assets/documents.js" defer></script>
+  <script src="/assets/project-upload.js" defer></script>
   <script src="/assets/projects.js" defer></script>
 </body>
 </html>

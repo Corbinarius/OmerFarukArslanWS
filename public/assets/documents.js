@@ -20,7 +20,7 @@
     $('document-login').hidden = data.admin || data.authenticated;
     $('document-upload').hidden = !data.admin;
     $('document-logout').hidden = !data.authenticated;
-    $('manage-documents').textContent = data.admin ? 'PDF ekle' : 'Yönetici girişi';
+    $('manage-documents').textContent = data.admin ? 'PDF yönetimi' : 'Hesap kurtarma / davet';
     if (data.authenticated && !data.admin) $('document-auth-status').textContent = 'Bu hesabın yönetici yetkisi yok. Admin rolü gerekli.';
     window.dispatchEvent(new CustomEvent('portfolio:session', { detail: data }));
   }
@@ -111,7 +111,7 @@
         $('document-recover').hidden = true;
         $('document-login-submit').textContent = 'Şifreyi kaydet';
         $('document-password').autocomplete = 'new-password';
-        $('dokumanlar').scrollIntoView();
+        window.openAdminPanel();
       } else {
         if (expectsAuth) throw new Error('Bağlantı doğrulanamadı. Yeni e-posta bağlantısı isteyin.');
         session(await api(authEndpoint));

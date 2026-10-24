@@ -4,7 +4,7 @@
   "description": "Personal engineering archive with a PDF document library",
   "scripts": {
     "test": "node --test tests/*.test.cjs",
-    "typecheck": "tsc --noEmit --module nodenext --moduleResolution nodenext --target es2022 --lib es2022,dom --skipLibCheck netlify/functions/*.mts",
+    "typecheck": "tsc --noEmit --types node --module nodenext --moduleResolution nodenext --target es2022 --lib es2022,dom --skipLibCheck netlify/functions/*.mts",
     "check": "npm run test && npm run typecheck",
     "build:identity": "npm exec --yes --package=esbuild@0.25.12 -- esbuild src/identity-client.mjs --bundle --format=iife --platform=browser --target=es2022 --outfile=public/assets/identity-client.js"
   },

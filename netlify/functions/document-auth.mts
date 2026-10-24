@@ -1,3 +1,4 @@
+import { env } from 'node:process';
 import { getUser, login, logout, acceptInvite, recoverPassword, requestPasswordRecovery, refreshSession, verifyRequestOrigin } from '@netlify/identity';
 
 type Phase = 'session' | 'origin' | 'logout' | 'send-recovery' | 'invite' | 'reset' | 'login';
@@ -65,7 +66,13 @@ export default async (request: Request) => {
     }
     if (input.action === 'login' && typeof input.email === 'string' && input.email.length <= 254) {
       phase = 'login';
-      const user = await login(input.email, input.password);
+      let email=input.email.trim();
+      if(!email.includes('@')){
+        const alias=env.ADMIN_USERNAME, account=env.ADMIN_EMAIL;
+        if(!alias||!account||email.toLowerCase()!==alias.toLowerCase())return reply({error:'Kullanıcı adı veya şifre doğrulanamadı.'},401);
+        email=account;
+      }
+      const user = await login(email, input.password);
       return reply({ admin: Boolean(user?.roles?.includes('admin')), authenticated: true });
     }
     return reply({ error: 'Geçersiz işlem.' }, 400);

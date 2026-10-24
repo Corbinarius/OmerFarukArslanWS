@@ -14,15 +14,13 @@
     if (!response.ok) throw new Error(data.error || 'Sunucu işlemi tamamlanamadı.');
     return data;
   }
-  function editor(open) {
-    $('project-manager').hidden = !open;
-    $('open-project-manager').setAttribute('aria-expanded', String(open));
-    if (open) $('project-manager').scrollIntoView({ block: 'start', behavior: 'smooth' });
-  }
+  function editor(open) { if(open)window.openAdminPanel();else window.closeAdminPanel(); }
   function updateSession(session) {
     isAdmin = Boolean(session?.admin);
     window.portfolioAdmin = isAdmin;
-    $('open-project-manager').textContent = isAdmin ? '+ Proje ekle' : 'Yönetici girişi';
+    $('profile-editor').hidden=!isAdmin;
+    $('admin-logout').hidden=!session?.authenticated;
+    $('open-project-manager').textContent = 'Yönetici paneli';
     $('project-admin-login').hidden = isAdmin;
     $('project-publish-form').hidden = !isAdmin;
     if (state.activeId) renderDetail();
@@ -59,7 +57,7 @@
   }
 
   $('open-project-manager').addEventListener('click', () => {
-    editor($('project-manager').hidden);
+    editor(!$('admin-dialog').open);
   });
   $('close-project-manager').addEventListener('click', () => editor(false));
   window.addEventListener('portfolio:session', e => updateSession(e.detail));
@@ -70,7 +68,9 @@
     $('project-login-status').textContent = 'Giriş yapılıyor…';
     try {
       if (!window.portfolioIdentity) throw new Error('Kimlik bileşeni yüklenemedi. Sayfayı yenileyin.');
-      await window.portfolioIdentity.login($('project-login-email').value, $('project-login-password').value);
+      const username=$('project-login-email').value.trim();
+      if(username.includes('@'))await window.portfolioIdentity.login(username,$('project-login-password').value);
+      else await api('/.netlify/functions/document-auth',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'login',email:username,password:$('project-login-password').value})});
       const session = await api('/.netlify/functions/document-auth');
       $('project-login-password').value = '';
       updateSession(session);
@@ -96,6 +96,27 @@
     else return;
     hex.value = palette.value;
   });
+  const supportedSource = /(?:\.(?:c|h|cc|cpp|cxx|hpp|hxx|hh|v|sv|svh|vhd|vhdl|tcl|s|asm|ld|ioc|ini|txt|md|json|yaml|yml|xml|py|sh|cmake|cfg|sdc|xdc|launch|project|cproject|map|hex|csv)|(?:^|\/)(?:Makefile|CMakeLists\.txt|README|LICENSE))$/i;
+  const safePath = path => path.length <= 180 && !path.startsWith('/') &&
+    path.split('/').every(part => part && part !== '.' && part !== '..' && !part.includes('\\') &&
+      !['.env','.git','.ssh','node_modules','secrets'].includes(part.toLowerCase()));
+  const sourceInputs = [$('new-project-sources'), $('new-project-folder')];
+  function collectedSources() {
+    const files = sourceInputs.flatMap(input => [...input.files]).map(file => ({
+      file, path: (file.webkitRelativePath || file.name).replaceAll('\\','/')
+    }));
+    const allowed = files.filter(item => safePath(item.path) && supportedSource.test(item.path));
+    const unique = new Map();
+    for (const item of allowed) unique.set(item.path, item);
+    return { files:[...unique.values()], skipped:files.length-allowed.length, duplicates:allowed.length-unique.size };
+  }
+  function updateSourcePreview() {
+    const {files,skipped,duplicates}=collectedSources();
+    const text = files.length ? `${files.length} kaynak dosyası (${files.reduce((sum,x)=>sum+x.file.size,0).toLocaleString('tr-TR')} bayt)\n${files.slice(0,12).map(x=>'• '+x.path).join('\n')}${files.length>12?'\n…':''}` : 'Henüz kaynak dosyası seçilmedi.';
+    $('source-selection').textContent = text + (skipped?`\n${skipped} desteklenmeyen veya hassas dosya atlandı.`:'') + (duplicates?`\n${duplicates} yinelenen dosya tekilleştirildi.`:'');
+  }
+  sourceInputs.forEach(input=>input.addEventListener('change', updateSourcePreview));
+
   $('project-publish-form').addEventListener('submit', async e => {
     e.preventDefault();
     if (!isAdmin) { goToLogin(); return; }
@@ -103,37 +124,41 @@
     const button = $('project-publish-button');
     const levels = [...form.querySelectorAll('input[name="project-level"]:checked')].map(el=>el.value);
     if (!levels.length) { feedback('En az bir zorluk seviyesi seç.', true); return; }
-    const file = $('new-project-file').files[0];
+    const { files } = collectedSources();
     const repoUrl = $('new-project-repo').value.trim();
-    if ((!file || !file.size) && !repoUrl) { feedback('Kaynak ZIP veya GitHub bağlantısı ekle.', true); return; }
-    if (file && (file.size > 3*1024*1024 || !/\.zip$/i.test(file.name))) {
-      feedback('ZIP dosyası .zip uzantılı ve en fazla 3 MB olmalı.', true); return;
+    if (!files.length && !repoUrl) { feedback('En az bir kaynak dosyası, klasör veya GitHub bağlantısı ekle.', true); return; }
+    if (files.length > 10000 || files.reduce((sum,x)=>sum+x.file.size,0)>100*1024*1024) {
+      feedback('En fazla 10000 kaynak dosyası, toplam 100 MB.', true); return;
     }
     const data = new FormData(form);
     data.set('levels', JSON.stringify(levels));
     data.set('color', palette.value);
+
     button.disabled = true;
     feedback('Proje kaydediliyor…');
     try {
-      const result = await api(apiPath, { method: 'POST', body: data });
+      const result = files.length ? await window.ProjectUpload.publish(files,data,feedback) : await api(apiPath, { method: 'POST', body: data });
       if (!acceptedRecord(result.project)) throw new Error('Sunucudan beklenmeyen proje yanıtı alındı.');
       PROJECTS.unshift(result.project);
       form.reset();
       palette.value = '#a4c7e6'; hex.value = palette.value;
+      sourceInputs.forEach(input=>{ input.value=''; }); updateSourcePreview();
       updatePlatformOptions();
       state.query = ''; $('search').value = '';
       state.platform = ''; state.levels.clear(); state.tag='';
       render();
-      feedback('Proje yayımlandı. Artık arşivde listeleniyor.');
-    } catch (error) { feedback(error.message, true); }
+      feedback('Proje yayımlandı. Kaynak dosyaları proje detayında açıldı.');
+      editor(false);
+      openProject(result.project.id);
+    } catch (error) { feedback(error.message + ' Aynı dosyalarla yeniden Yayımla düğmesine basarak bu sekmede kaldığın yerden devam edebilirsin.', true); }
     finally { button.disabled = false; }
   });
 
   $('delete-current-project').addEventListener('click', async () => {
     const id = state.activeId;
     const project = PROJECTS.find(p=>p.id===id);
-    if (!isAdmin || !project || (!project.archive && !project.repoUrl)) return;
-    if (!window.confirm(`“${project.title}” projesini ve yüklenen ZIP dosyasını kalıcı olarak silmek istiyor musun?`)) return;
+    if (!isAdmin || !project || (!project.sourceFiles?.length && !project.archive && !project.repoUrl)) return;
+    if (!window.confirm(`“${project.title}” projesini ve yüklenen tüm kaynak dosyalarını kalıcı olarak silmek istiyor musun?`)) return;
     const button = $('delete-current-project');
     button.disabled = true;
     try {

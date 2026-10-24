@@ -12,7 +12,7 @@ test('HTML page and document script have valid JavaScript syntax', () => {
   const inline = [...html.matchAll(/<script(?:\s[^>]*)?>([\s\S]*?)<\/script>/g)].map(match => match[1]);
   assert.ok(inline.length > 0);
   inline.forEach((code, n) => assert.doesNotThrow(() => new vm.Script(code, { filename: `inline-${n}.js` })));
-  for (const filename of ['documents.js', 'projects.js']) {
+  for (const filename of ['documents.js', 'projects.js', 'project-upload.js', 'source-browser.js', 'site-shell.js']) {
     const code = fs.readFileSync(path.join(publish, 'assets', filename), 'utf8');
     assert.doesNotThrow(() => new vm.Script(code, { filename }));
   }
@@ -43,13 +43,16 @@ test('Netlify functions remain outside the public publish directory', () => {
 });
 
 test('project publisher offers a secure management interface and Netlify backend', () => {
-  for (const id of ['open-project-manager','project-manager','project-admin-login','project-publish-form','new-project-title','new-project-platform','new-project-color','new-project-tags','new-project-file','new-project-repo','delete-current-project']) {
+  for (const id of ['open-project-manager','project-manager','project-admin-login','project-publish-form','new-project-title','new-project-platform','new-project-color','new-project-tags','new-project-sources','new-project-folder','source-selection','new-project-repo','delete-current-project']) {
     assert.ok(html.includes(`id="${id}"`), `Missing project control: ${id}`);
   }
   const api = fs.readFileSync(path.join(root, 'netlify/functions/projects.mts'),'utf8');
   assert.ok(api.includes('verifyRequestOrigin(request)'));
   assert.ok(api.includes("user.roles?.includes('admin')"));
   assert.ok(api.includes("getStore({ name: 'portfolio-projects'"));
+  assert.ok(api.includes('sources/${id}/${index}'));
+  assert.ok(api.includes('sourceFiles: sourceManifest'));
+  assert.ok(html.includes('fileTreeMarkup(project.sourceFiles)'));
 });
 
 test('static demonstration projects are removed while dynamic project publishing remains enabled', () => {
